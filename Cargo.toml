@@ -1,0 +1,12 @@
+[package]
+name = "html_editor"
+version = "0.1.0"
+edition = "2021"
+authors = ["Lomirus"]
+description = "Pure, simple and elegant HTML parser and editor."
+homepage = "https://github.com/lomirus/html_editor"
+repository = "https://github.com/lomirus/html_editor"
+license = "MIT"
+keywords = ["html", "parser", "editor", "dom", "query", "selector"]
+
+[dependencies]
