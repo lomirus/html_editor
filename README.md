@@ -1,4 +1,5 @@
 [![Crates.io](https://img.shields.io/crates/v/html_editor)](https://crates.io/crates/html_editor)
+![License](https://img.shields.io/crates/l/html_editor)
 
 # HTML Editor
 
