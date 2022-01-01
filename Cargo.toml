@@ -7,6 +7,6 @@ description = "Pure, simple and elegant HTML parser and editor."
 homepage = "https://github.com/lomirus/html_editor"
 repository = "https://github.com/lomirus/html_editor"
 license = "MIT"
-keywords = ["html", "parser", "editor", "dom", "query", "selector"]
+keywords = ["html", "parser", "editor", "dom"]
 
 [dependencies]
