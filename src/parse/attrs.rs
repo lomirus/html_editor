@@ -94,7 +94,10 @@ pub fn parse(attr_str: String) -> HashMap<String, String> {
     if !chars_stack.is_empty() {
         let str = String::from_iter(chars_stack);
         match attr_pos {
-            AttrPos::Key => key_stack.push(str),
+            AttrPos::Key => {
+                key_stack.push(str);
+                value_stack.push(String::new());
+            }
             AttrPos::Value(delimiter) => {
                 if let None = delimiter {
                     value_stack.push(str);
