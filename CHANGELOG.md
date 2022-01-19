@@ -1,10 +1,10 @@
 ## v0.2.0 (2022-01-19)
 
-## Fix
+### Fix
 
 - Fail to parse the attributes if the the last key of it doesn't have the value, like `<script src="index.js" type="module" defer></script>`
 
-## Enhancements
+### Enhancements
 
 - Omit the attribute if its value is empty. For example:
   ```html
