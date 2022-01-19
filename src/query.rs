@@ -103,9 +103,10 @@ impl Selector {
         }
 
         if self.class != "" {
-            match element.attrs.get("class") {
+            let element_class = element.attrs.iter().find(|(key,_)|key == "class");
+            match element_class {
                 Some(class) => {
-                    if &self.class != class {
+                    if self.class != class.1 {
                         matches = false;
                     }
                 }
@@ -118,9 +119,10 @@ impl Selector {
         }
 
         if self.id != "" {
-            match element.attrs.get("id") {
+            let element_id = element.attrs.iter().find(|(key,_)|key == "id");
+            match element_id {
                 Some(id) => {
-                    if &self.id != id {
+                    if self.id != id.1 {
                         matches = false;
                     }
                 }

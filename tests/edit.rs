@@ -1,5 +1,3 @@
-use std::collections::HashMap;
-
 use html_editor::{parse, Editable, Htmlifiable, Node, Selector};
 
 const HTML: &str = r#"
@@ -38,11 +36,11 @@ const REMOVED_HTML: &str = r#"
 #[test]
 fn insert() {
     let body_selector = Selector::from("body");
-    let script = Node::Element {
-        name: "script".to_string(),
-        attrs: HashMap::new(),
-        children: vec![Node::Text(r#"console.log("Hello World")"#.to_string())],
-    };
+    let script = Node::new_element(
+        "script",
+        Vec::new(),
+        vec![Node::Text(r#"console.log("Hello World")"#.to_string())],
+    );
     let html = parse(HTML).insert_to(&body_selector, script).html();
     assert_eq!(html, INSERTED_HTML);
 }

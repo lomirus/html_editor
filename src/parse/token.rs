@@ -1,15 +1,14 @@
-use std::collections::HashMap;
 use crate::Node;
 use crate::parse::attrs;
 
 #[derive(Debug, Clone)]
 pub enum Token {
     // Like `<div>`, including `<img>`, `<input>`, etc.
-    Start(String, HashMap<String, String>),
+    Start(String, Vec<(String, String)>),
     // Like `</div>`
     End(String),
     // Like `<div />`
-    Closing(String, HashMap<String, String>),
+    Closing(String, Vec<(String, String)>),
     // Like `<!doctype html>`
     Doctype,
     // Like `<!-- comment -->`
@@ -81,7 +80,7 @@ impl Token {
             },
             Self::End(name) => Node::Element {
                 name,
-                attrs: HashMap::new(),
+                attrs: Vec::new(),
                 children: Vec::new(),
             },
             Self::Closing(name, attrs) => Node::Element {

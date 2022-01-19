@@ -4,8 +4,6 @@ mod parse;
 mod query;
 mod data;
 
-use std::collections::HashMap;
-
 pub use edit::Editable;
 pub use html::Htmlifiable;
 pub use parse::parse;
@@ -16,7 +14,7 @@ pub use query::{Queryable, Selector};
 pub enum Node {
     Element {
         name: String,
-        attrs: HashMap<String, String>,
+        attrs: Vec<(String, String)>,
         children: Vec<Node>,
     },
     Text(String),
@@ -63,7 +61,7 @@ impl Node {
 #[derive(Debug)]
 pub struct Element {
     pub name: String,
-    pub attrs: HashMap<String, String>,
+    pub attrs: Vec<(String, String)>,
     pub children: Vec<Node>,
 }
 

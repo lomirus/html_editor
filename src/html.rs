@@ -13,17 +13,15 @@ pub trait Htmlifiable {
     ///         ("src", "index.js"),
     ///         ("defer", "")
     ///     ],
-    ///     vec![
-    ///         Node::Text(r#"console.log("Hello World!")"#.to_string())
-    ///     ]
+    ///     vec![]
     /// );
-    /// assert_eq!(node.html(), r#"<script src="index.js" defer>console.log("Hello World!")</script>"#);
+    /// assert_eq!(node.html(), r#"<script src="index.js" defer></script>"#);
     ///
     /// let nodes: Vec<Node> = vec![node.clone()];
-    /// assert_eq!(nodes.html(), r#"<script src="index.js" defer>console.log("Hello World!")</script>"#);
+    /// assert_eq!(nodes.html(), r#"<script src="index.js" defer></script>"#);
     ///
     /// let element: Element = node.try_into_element().unwrap();
-    /// assert_eq!(element.html(), r#"<script src="index.js" defer>console.log("Hello World!")</script>"#);
+    /// assert_eq!(element.html(), r#"<script src="index.js" defer></script>"#);
     /// ```
     fn html(&self) -> String;
 }

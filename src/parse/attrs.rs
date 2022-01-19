@@ -1,5 +1,3 @@
-use std::collections::HashMap;
-
 // Let's take `<img src="example.png" alt=image>` for example.
 enum AttrPos {
     // This including `src`, `alt`
@@ -13,7 +11,7 @@ enum AttrPos {
 }
 
 // Valid `attr_str` like: `src="example.png" alt=example disabled`
-pub fn parse(attr_str: String) -> HashMap<String, String> {
+pub fn parse(attr_str: String) -> Vec<(String, String)> {
     let mut chars_stack: Vec<char> = Vec::new();
     let mut key_stack: Vec<String> = Vec::new();
     let mut value_stack: Vec<String> = Vec::new();
@@ -116,13 +114,13 @@ pub fn parse(attr_str: String) -> HashMap<String, String> {
         )
     }
 
-    let mut hashmap = HashMap::new();
+    let mut attrs = Vec::new();
     let len = key_stack.len();
     for _ in 0..len {
-        hashmap.insert(
+        attrs.push((
             key_stack.pop().expect(err_info),
             value_stack.pop().expect(err_info),
-        );
+        ));
     }
-    hashmap
+    attrs
 }
