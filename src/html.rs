@@ -3,24 +3,27 @@ use crate::{data::VOID_TAGS, Element, Node};
 /// Used to be converted to html string
 pub trait Htmlifiable {
     /// Convert the object to html string.
-    /// 
+    ///
     /// ```
     /// use html_editor::{Node, Element, Htmlifiable};
-    /// 
+    ///
     /// let node: Node = Node::new_element(
-    ///     "span",
-    ///     vec![("class", "info")],
+    ///     "script",
     ///     vec![
-    ///         Node::Text("Hello World!".to_string())
+    ///         ("src", "index.js"),
+    ///         ("defer", "")
+    ///     ],
+    ///     vec![
+    ///         Node::Text(r#"console.log("Hello World!")"#.to_string())
     ///     ]
     /// );
-    /// assert_eq!(node.html(), r#"<span class="info">Hello World!</span>"#);
-    /// 
+    /// assert_eq!(node.html(), r#"<script src="index.js" defer>console.log("Hello World!")</script>"#);
+    ///
     /// let nodes: Vec<Node> = vec![node.clone()];
-    /// assert_eq!(nodes.html(), r#"<span class="info">Hello World!</span>"#);
-    /// 
+    /// assert_eq!(nodes.html(), r#"<script src="index.js" defer>console.log("Hello World!")</script>"#);
+    ///
     /// let element: Element = node.try_into_element().unwrap();
-    /// assert_eq!(element.html(), r#"<span class="info">Hello World!</span>"#);
+    /// assert_eq!(element.html(), r#"<script src="index.js" defer>console.log("Hello World!")</script>"#);
     /// ```
     fn html(&self) -> String;
 }
@@ -38,11 +41,11 @@ impl Htmlifiable for Element {
             .attrs
             .iter()
             .map(|(k, v)| {
-                format!(
-                    "{}=\"{}\"",
-                    k,
-                    v.replace("\"", "\\\"").replace("\'", "\\\'")
-                )
+                if v.is_empty() {
+                    format!("{}", k)
+                } else {
+                    format!(r#"{}="{}""#, k, v)
+                }
             })
             .collect::<Vec<_>>()
             .join(" ");
