@@ -14,10 +14,11 @@ pub trait Editable {
     ///         <body></body>
     ///     </html>"#;
     /// 
-    /// let html = parse(html).trim().html();
+    /// let html = parse(html).unwrap().trim().html();
     /// assert_eq!(html, r#"<!DOCTYPE html><html><head></head><body></body></html>"#)
     /// ```
     fn trim(self) -> Self;
+
     /// Insert `node` as the last child to all elements that matches the `selector`.
     /// 
     /// ```
@@ -27,6 +28,7 @@ pub trait Editable {
     /// 
     /// let selector = Selector::from("div");
     /// let html = parse(html)
+    ///     .unwrap()
     ///     .insert_to(&selector, Node::new_element(
     ///         "span",
     ///         vec![],
@@ -36,6 +38,7 @@ pub trait Editable {
     /// assert_eq!(html, r#"<div><span>Ok</span><span>Cancel</span></div>"#)
     /// ```
     fn insert_to(&mut self, selector: &Selector, target: Node) -> &mut Self;
+    
     /// Remove all elements that matches the `selector`.
     /// 
     /// ```
@@ -49,7 +52,7 @@ pub trait Editable {
     /// </div>"#;
     /// 
     /// let selector = Selector::from(".ad");
-    /// let html = parse(html).remove_by(&selector).html();
+    /// let html = parse(html).unwrap().remove_by(&selector).html();
     /// assert_eq!(html, r#"
     /// <div>
     ///     <div class="recommend"></div>

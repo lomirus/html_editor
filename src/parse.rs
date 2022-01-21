@@ -4,7 +4,7 @@ mod token;
 use crate::{data::VOID_TAGS, Node};
 use token::Token;
 
-fn html_to_stack(html: &str) -> Vec<Token> {
+fn html_to_stack(html: &str) -> Result<Vec<Token>, String> {
     let mut chars_stack = Vec::<char>::new();
     let mut token_stack = Vec::<Token>::new();
     let mut in_quotes: Option<char> = None;
@@ -80,10 +80,10 @@ fn html_to_stack(html: &str) -> Vec<Token> {
             }
         }
     }
-    token_stack
+    Ok(token_stack)
 }
 
-fn stack_to_dom(token_stack: Vec<Token>) -> Vec<Node> {
+fn stack_to_dom(token_stack: Vec<Token>) -> Result<Vec<Node>, String> {
     let mut nodes: Vec<Node> = Vec::new();
     let mut start_tokens_stack: Vec<Token> = Vec::new();
     let mut start_token_index = 0;
@@ -109,17 +109,15 @@ fn stack_to_dom(token_stack: Vec<Token>) -> Vec<Node> {
                 }
             }
             Token::End(tag) => {
-                let start_tag = start_tokens_stack
-                    .pop()
-                    .expect(format!("unexpected end tag: {}", tag).as_str())
-                    .into_node()
-                    .try_into_element()
-                    .unwrap();
+                let start_tag = match start_tokens_stack.pop() {
+                    Some(token) => token.into_node().try_into_element()?,
+                    None => return Err(format!("No start tag for end tag: {}", tag))
+                };
                 if start_tokens_stack.is_empty() {
                     nodes.push(Node::Element {
                         name: start_tag.name,
                         attrs: start_tag.attrs,
-                        children: stack_to_dom(token_stack[start_token_index + 1..i].to_vec()),
+                        children: stack_to_dom(token_stack[start_token_index + 1..i].to_vec())?,
                     })
                 }
             }
@@ -130,7 +128,7 @@ fn stack_to_dom(token_stack: Vec<Token>) -> Vec<Node> {
             }
         }
     }
-    nodes
+    Ok(nodes)
 }
 
 /// Parse the html string and return a `Vector` of `Node`.
@@ -183,8 +181,8 @@ fn stack_to_dom(token_stack: Vec<Token>) -> Vec<Node> {
 ///     },
 /// ]
 /// ```
-pub fn parse(html: &str) -> Vec<Node> {
-    let stack = html_to_stack(html);
+pub fn parse(html: &str) -> Result<Vec<Node>, String> {
+    let stack = html_to_stack(html)?;
     let dom = stack_to_dom(stack);
     dom
 }

@@ -41,13 +41,13 @@ fn insert() {
         Vec::new(),
         vec![Node::Text(r#"console.log("Hello World")"#.to_string())],
     );
-    let html = parse(HTML).insert_to(&body_selector, script).html();
+    let html = parse(HTML).unwrap().insert_to(&body_selector, script).html();
     assert_eq!(html, INSERTED_HTML);
 }
 
 #[test]
 fn remove() {
     let meta_selector = Selector::from("meta");
-    let html = parse(HTML).remove_by(&meta_selector).html();
+    let html = parse(HTML).unwrap().remove_by(&meta_selector).html();
     assert_eq!(html, REMOVED_HTML);
 }

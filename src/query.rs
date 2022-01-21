@@ -158,9 +158,10 @@ pub trait Queryable {
     ///     </html>"#;
     /// 
     /// let selector: Selector = Selector::from("#app");
-    /// let app: Element = parse(html).query(&selector).unwrap();
+    /// let app: Element = parse(html).unwrap().query(&selector).unwrap();
     /// ```
     fn query(&self, selector: &Selector) -> Option<Element>;
+
     /// Query all the nodes in `self` for the given selector.
     /// 
     /// ```
@@ -181,7 +182,7 @@ pub trait Queryable {
     ///     </html>"#;
     /// 
     /// let selector: Selector = Selector::from(".btn");
-    /// let app: Vec<Element> = parse(html).query_all(&selector);
+    /// let app: Vec<Element> = parse(html).unwrap().query_all(&selector);
     /// ```
     fn query_all(&self, selector: &Selector) -> Vec<Element>;
 }
@@ -203,6 +204,7 @@ impl Queryable for Vec<Node> {
         }
         None
     }
+
     fn query_all(&self, selector: &Selector) -> Vec<Element> {
         let mut elements = Vec::new();
         for node in self {
@@ -225,6 +227,7 @@ impl Queryable for Element {
     fn query(&self, selector: &Selector) -> Option<Element> {
         self.children.query(selector)
     }
+    
     fn query_all(&self, selector: &Selector) -> Vec<Element> {
         self.children.query_all(selector)
     }

@@ -52,20 +52,20 @@ fn matched() {
                 <span></span>
             </span>
         </span>"#,
-    ).trim();
+    ).unwrap().trim();
     let b = parse(
         r#"
         <span></span>
         <span></span>
         <span></span>"#,
-    ).trim();
+    ).unwrap().trim();
     let c = parse(
         r#"
         <span>
             <span></span>
         </span>
         <span></span>"#,
-    ).trim();
+    ).unwrap().trim();
 
     println!("{:#?}", a);
     println!("{:#?}", b);
@@ -98,7 +98,7 @@ fn complex() {
             <footer></footer>
         </body>
         </html>"#,
-    ).trim();
+    ).unwrap().trim();
 
     println!("{:#?}", a);
 }
