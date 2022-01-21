@@ -10,7 +10,7 @@ Pure, simple and elegant HTML parser and editor.
 ### Parse HTML segment/document
 
 ```rust
-let document = parse("<!doctype html><html><head></head><body></body></html>");
+let document = parse("<!doctype html><html><head></head><body></body></html>")?;
 println!("{:#?}", document);
 ```
 
@@ -42,7 +42,7 @@ Output:
 
 ```rust
 // let html = r#"..."#
-let nodes = parse(html);
+let nodes = parse(html)?;
 let selector: Selector = Selector::from(".last");
 let element: Element = nodes.query(&selector).unwrap();
 ```
@@ -51,7 +51,7 @@ let element: Element = nodes.query(&selector).unwrap();
 
 ```rust
 // let html = r#"..."#
-let nodes = parse(html);
+let nodes = parse(html)?;
 let selector: Selector = Selector::from("span");
 let elements: Vec<Element> = nodes.query_all(&selector);
 ```
@@ -60,9 +60,9 @@ let elements: Vec<Element> = nodes.query_all(&selector);
 
 ```rust
 // let html = r#"..."#
-let a: String = parse(html).trim().html();
-let b: String = parse(html).insert_to(&selector, node).html();
-let c: String = parse(html).remove_by(&selector).html();
+let a: String = parse(html)?.trim().html();
+let b: String = parse(html)?.insert_to(&selector, node).html();
+let c: String = parse(html)?.remove_by(&selector).html();
 ```
 
 You can find more examples in the [documentation](https://docs.rs/html_editor/latest/html_editor/).
