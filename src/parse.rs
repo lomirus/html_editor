@@ -103,7 +103,12 @@ fn stack_to_dom(token_stack: Vec<Token>) -> Result<Vec<Node>, String> {
                         start_tokens_stack.push(Token::Start(tag.clone(), attrs.clone()));
                     }
                 } else {
-                    if !is_void_tag {
+                    if is_void_tag {
+                        // You do not need to push the void tag to the stack
+                        // like above, because it must be inside the the
+                        // element of the first start tag, and this element
+                        // will then be pushed to the stack recursively.
+                    } else {
                         start_tokens_stack.push(Token::Start(tag.clone(), attrs.clone()));
                     }
                 }
@@ -111,8 +116,14 @@ fn stack_to_dom(token_stack: Vec<Token>) -> Result<Vec<Node>, String> {
             Token::End(tag) => {
                 let start_tag = match start_tokens_stack.pop() {
                     Some(token) => token.into_node().try_into_element()?,
-                    None => return Err(format!("No start tag for end tag: {}", tag))
+                    None => return Err(format!("No start tag matches </{}>", tag)),
                 };
+                if tag != &start_tag.name {
+                    return Err(format!(
+                        "<{}> does not match the </{}>",
+                        start_tag.name, tag
+                    ));
+                }
                 if start_tokens_stack.is_empty() {
                     nodes.push(Node::Element {
                         name: start_tag.name,
@@ -128,7 +139,14 @@ fn stack_to_dom(token_stack: Vec<Token>) -> Result<Vec<Node>, String> {
             }
         }
     }
-    Ok(nodes)
+
+    match start_tokens_stack.pop() {
+        Some(token) => {
+            let start_tag_name = token.into_node().try_into_element()?.name;
+            Err(format!("<{}> is not closed", start_tag_name))
+        }
+        None => Ok(nodes),
+    }
 }
 
 /// Parse the html string and return a `Vector` of `Node`.

@@ -1,4 +1,4 @@
-use html_editor::{parse, Editable};
+use html_editor::{parse, Editable, Htmlifiable};
 
 #[test]
 fn paired_tag() {
@@ -52,24 +52,24 @@ fn matched() {
                 <span></span>
             </span>
         </span>"#,
-    ).unwrap().trim();
+    ).unwrap().trim().html();
     let b = parse(
         r#"
         <span></span>
         <span></span>
         <span></span>"#,
-    ).unwrap().trim();
+    ).unwrap().trim().html();
     let c = parse(
         r#"
         <span>
             <span></span>
         </span>
         <span></span>"#,
-    ).unwrap().trim();
+    ).unwrap().trim().html();
 
-    println!("{:#?}", a);
-    println!("{:#?}", b);
-    println!("{:#?}", c);
+    assert_eq!("<span><span><span></span></span></span>", a);
+    assert_eq!("<span></span><span></span><span></span>", b);
+    assert_eq!("<span><span></span></span><span></span>", c);
 }
 
 #[test]

@@ -32,7 +32,7 @@ impl Node {
     }
 
     /// Try to convert the node into an element.
-    pub fn try_into_element(self) -> Result<Element, &'static str> {
+    pub fn try_into_element(self) -> Result<Element, String> {
         match self {
             Node::Element {
                 name,
@@ -43,7 +43,7 @@ impl Node {
                 attrs,
                 children,
             }),
-            _ => Err("not an element"),
+            _ => Err(format!("{:?} is not an element", self)),
         }
     }
 
