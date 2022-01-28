@@ -11,28 +11,51 @@ fn html_to_stack(html: &str) -> Result<Vec<Token>, String> {
     // More precisely: is in angle brackets
     let mut in_brackets = false;
     let mut in_comment = false;
+    let mut in_script = false;
+    let mut in_style = false;
     for ch in html.chars() {
         if let Some(quote) = in_quotes {
             if ch == quote {
-                let last_char = chars_stack
+                let previous_char = chars_stack
                     .last()
                     .expect("cannot get the last char in chars stack")
                     .clone();
-                if last_char != '\\' {
+                if previous_char != '\\' {
                     in_quotes = None;
                 }
             }
             chars_stack.push(ch);
         } else if in_comment {
             chars_stack.push(ch);
-            let len = chars_stack.len();
-            if chars_stack[len - 3..len] == ['-', '-', '>'] {
+
+            if String::from_iter(&chars_stack).ends_with("-->") {
                 let comment = String::from_iter(chars_stack);
                 chars_stack = Vec::new();
-                let tag = Token::from_comment(comment);
-                token_stack.push(tag);
+                token_stack.push(Token::from_comment(comment));
                 in_comment = false;
                 in_brackets = false;
+            }
+        } else if in_script {
+            chars_stack.push(ch);
+            let len = chars_stack.len();
+            
+            if String::from_iter(&chars_stack).ends_with("</script>") {
+                let script = String::from_iter(chars_stack[..len - 9].to_vec());
+                chars_stack = Vec::new();
+                token_stack.push(Token::Text(script));
+                token_stack.push(Token::End("script".to_string()));
+                in_script = false;
+            }
+        } else if in_style {
+            chars_stack.push(ch);
+            let len = chars_stack.len();
+            
+            if String::from_iter(&chars_stack).ends_with("</style>") {
+                let style = String::from_iter(chars_stack[..len - 8].to_vec());
+                chars_stack = Vec::new();
+                token_stack.push(Token::Text(style));
+                token_stack.push(Token::End("style".to_string()));
+                in_style = false;
             }
         } else {
             match ch {
@@ -59,11 +82,20 @@ fn html_to_stack(html: &str) -> Result<Vec<Token>, String> {
                     // Push the tag with the text we just got to the token stack.
                     let tag = Token::from(tag_text.clone())
                         .expect(format!("Invalid tag: {}", tag_text).as_str());
-                    token_stack.push(tag);
+                    token_stack.push(tag.clone());
+                    // Handle special tags
+                    if let Token::Start(tag_name, _) = tag {
+                        let tag_name = tag_name.as_str();
+                        match tag_name {
+                            "script" => in_script = true,
+                            "style" => in_style = true,
+                            _ => {}
+                        }
+                    }
                 }
                 '-' => {
                     chars_stack.push(ch);
-                    if chars_stack.len() == 4 && chars_stack == ['<', '!', '-', '-'] {
+                    if String::from_iter(&chars_stack) == "<!--" {
                         in_comment = true;
                     }
                 }
@@ -201,6 +233,7 @@ fn stack_to_dom(token_stack: Vec<Token>) -> Result<Vec<Node>, String> {
 /// ```
 pub fn parse(html: &str) -> Result<Vec<Node>, String> {
     let stack = html_to_stack(html)?;
+    // println!("{:#?}", stack);
     let dom = stack_to_dom(stack);
     dom
 }
