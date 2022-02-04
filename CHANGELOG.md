@@ -1,4 +1,4 @@
-## v0.3.0 (2022)
+## v0.3.0 (2022-01-28)
 
 ### Refactor
 
@@ -6,7 +6,7 @@
 
 ### Fix
 
-- In previous version, `parse` sometimes may return an unexpected result but without any error message. And now any currently known error will be delivered.
+- In previous version, `parse` sometimes may return an unexpected result but without any error message. But now any currently known error will be delivered.
 - Tag string in `<script>` or `<style>` cannot be parsed correctly. For example, `<script>"<div></div>"</script>` would be parsed as a `<div>` element in the `<script>` instead of the plain string.
 
 ## v0.2.0 (2022-01-19)
@@ -24,9 +24,9 @@
 
 - Use vector to store the attributes instead of hashmap, which can make its order stable. For example:
   ```html
-  <!--Old. Maybe-->
+  <!--Old. When an element turns to html, it may be-->
   <script src="index.js" type="module"></script>
-  <!--But it is also a possible result-->
+  <!--But below is also a possible result-->
   <script type="module" src="index.js"></script>
 
   <!--New. The result would be unique, and just the same as its input-->
