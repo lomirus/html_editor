@@ -21,7 +21,7 @@ pub trait Htmlifiable {
     /// let nodes: Vec<Node> = vec![node.clone()];
     /// assert_eq!(nodes.html(), r#"<script src="index.js" defer></script>"#);
     ///
-    /// let element: Element = node.try_into_element().unwrap();
+    /// let element: Element = node.into_element();
     /// assert_eq!(element.html(), r#"<script src="index.js" defer></script>"#);
     /// ```
     fn html(&self) -> String;
@@ -66,7 +66,7 @@ impl Htmlifiable for Element {
 impl Htmlifiable for Node {
     fn html(&self) -> String {
         match self {
-            Node::Element { .. } => self.clone().try_into_element().unwrap().html(),
+            Node::Element { .. } => self.clone().into_element().html(),
             Node::Text(text) => text.to_string(),
             Node::Comment(comment) => format!("<!--{}-->", comment),
             Node::Doctype => "<!DOCTYPE html>".to_string(),

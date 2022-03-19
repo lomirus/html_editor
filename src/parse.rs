@@ -147,7 +147,7 @@ fn stack_to_dom(token_stack: Vec<Token>) -> Result<Vec<Node>, String> {
             }
             Token::End(tag) => {
                 let start_tag = match start_tokens_stack.pop() {
-                    Some(token) => token.into_node().try_into_element()?,
+                    Some(token) => token.into_node().into_element(),
                     None => return Err(format!("No start tag matches </{}>", tag)),
                 };
                 if tag != &start_tag.name {
@@ -174,7 +174,7 @@ fn stack_to_dom(token_stack: Vec<Token>) -> Result<Vec<Node>, String> {
 
     match start_tokens_stack.pop() {
         Some(token) => {
-            let start_tag_name = token.into_node().try_into_element()?.name;
+            let start_tag_name = token.into_node().into_element().name;
             Err(format!("<{}> is not closed", start_tag_name))
         }
         None => Ok(nodes),

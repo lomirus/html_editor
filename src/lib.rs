@@ -4,7 +4,7 @@
 //! ```
 //! use html_editor::prelude::*;
 //! use html_editor::{parse, Node, Selector};
-//! 
+//!
 //! // You can create dom nodes by parsing html string.
 //! let html = r#"
 //!     <!doctype html>
@@ -16,7 +16,7 @@
 //!     </html>
 //! "#;
 //! let mut dom = parse(html).unwrap();
-//! 
+//!
 //! // Or you can create a node by some built-in methods like below.
 //! let app: Node = Node::new_element("div", vec![("id", "app")], vec![]);
 //!
@@ -66,19 +66,22 @@ impl Node {
         }
     }
 
-    /// Try to convert the node into an element.
-    pub fn try_into_element(self) -> Result<Element, String> {
+    /// Convert the node into an element. 
+    /// 
+    /// Note: The program will panic if it fails to convert.
+    /// So take care to use this method unless you are sure.
+    pub fn into_element(self) -> Element {
         match self {
             Node::Element {
                 name,
                 attrs,
                 children,
-            } => Ok(Element {
+            } => Element {
                 name,
                 attrs,
                 children,
-            }),
-            _ => Err(format!("{:?} is not an element", self)),
+            },
+            _ => panic!("{:?} is not an element", self),
         }
     }
 

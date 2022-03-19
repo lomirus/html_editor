@@ -27,8 +27,7 @@ fn element_query() {
     let nodes = parse(HTML).unwrap();
     let node = nodes.into_iter().nth(1).unwrap();
     let element = node
-        .try_into_element()
-        .unwrap()
+        .into_element()
         .query(&Selector::from("span"))
         .unwrap();
     println!("{:?}", element);
@@ -39,8 +38,7 @@ fn element_query_all() {
     let nodes = parse(HTML).unwrap();
     let node = nodes.into_iter().nth(1).unwrap();
     let elements = node
-        .try_into_element()
-        .unwrap()
+        .into_element()
         .query_all(&Selector::from("span"));
     println!("{:?}", elements);
 }
