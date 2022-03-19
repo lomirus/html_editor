@@ -63,7 +63,7 @@ fn html_to_stack(html: &str) -> Result<Vec<Token>, String> {
                     in_brackets = true;
                     // In case of pushing empty text tokens to the stack
                     if chars_stack.len() != 0 {
-                        // Turn the chars in `chars_stack` in to `String`
+                        // Turn the chars in `chars_stack` into `String`
                         // and clean the chars stack.
                         let txt_text = String::from_iter(chars_stack);
                         chars_stack = Vec::new();

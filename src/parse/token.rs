@@ -36,7 +36,7 @@ impl Token {
             let attr_str = tag[tag_name_end..tag.len() - 2].trim().to_string();
             Some(Self::Closing(tag_name, attrs::parse(attr_str)))
         } else if tag.starts_with("</") {
-            Some(Self::End(tag[2..tag.len() - 1].to_string()))
+            Some(Self::End(tag[2..tag.len() - 1].trim().to_string()))
         } else if tag.starts_with("<!--") {
             Some(Self::from_comment(tag))
         } else if tag.starts_with("<!") {
