@@ -184,7 +184,6 @@ fn stack_to_dom(token_stack: Vec<Token>) -> Result<Vec<Node>, String> {
 /// Parse the html string and return a `Vector` of `Node`.
 ///
 /// Example:
-///
 /// ```
 /// use html_editor::parse;
 ///
@@ -196,6 +195,7 @@ fn stack_to_dom(token_stack: Vec<Token>) -> Result<Vec<Node>, String> {
 /// let document = parse("<!doctype html><html><head></head><body></body></html>");
 /// println!("{:#?}", document);
 /// ```
+/// 
 /// Output:
 /// ```log
 /// [
