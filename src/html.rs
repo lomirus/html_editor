@@ -5,7 +5,8 @@ pub trait Htmlifiable {
     /// Convert the object to html string.
     ///
     /// ```
-    /// use html_editor::{Node, Element, Htmlifiable};
+    /// use html_editor::{Node, Element};
+    /// use html_editor::prelude::*;
     ///
     /// let node: Node = Node::new_element(
     ///     "script",

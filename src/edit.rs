@@ -5,7 +5,8 @@ pub trait Editable {
     /// Remove all empty text nodes from `self`.
     /// 
     /// ```
-    /// use html_editor::{parse, Editable, Htmlifiable};
+    /// use html_editor::parse;
+    /// use html_editor::prelude::*;
     ///
     /// let html = r#"
     ///     <!DOCTYPE html>
@@ -22,7 +23,8 @@ pub trait Editable {
     /// Insert `node` as the last child to all elements that matches the `selector`.
     /// 
     /// ```
-    /// use html_editor::{parse, Node, Selector, Editable, Htmlifiable};
+    /// use html_editor::{parse, Node, Selector};
+    /// use html_editor::prelude::*;
     ///
     /// let html = r#"<div><span>Ok</span></div>"#;
     /// 
@@ -42,7 +44,8 @@ pub trait Editable {
     /// Remove all elements that matches the `selector`.
     /// 
     /// ```
-    /// use html_editor::{parse, Selector, Editable, Htmlifiable};
+    /// use html_editor::{parse, Selector};
+    /// use html_editor::prelude::*;
     ///
     /// let html = r#"
     /// <div>

@@ -1,4 +1,5 @@
-use html_editor::{parse, Queryable, Selector};
+use html_editor::prelude::*;
+use html_editor::{parse, Selector};
 
 const HTML: &str = r#"
     <div>

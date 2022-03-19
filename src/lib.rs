@@ -1,13 +1,15 @@
+//! `html_editor` is a simple html parser and editor.
+
+mod data;
 mod edit;
 mod html;
 mod parse;
 mod query;
-mod data;
 
-pub use edit::Editable;
-pub use html::Htmlifiable;
+pub mod prelude;
+
 pub use parse::parse;
-pub use query::{Queryable, Selector};
+pub use query::Selector;
 
 /// Basic node of dom
 #[derive(Debug, Clone)]
@@ -51,7 +53,10 @@ impl Node {
     pub fn new_element(name: &str, attrs: Vec<(&str, &str)>, children: Vec<Node>) -> Node {
         Node::Element {
             name: name.to_string(),
-            attrs: attrs.into_iter().map(|(k, v)| (k.to_string(), v.to_string())).collect(),
+            attrs: attrs
+                .into_iter()
+                .map(|(k, v)| (k.to_string(), v.to_string()))
+                .collect(),
             children,
         }
     }
@@ -70,7 +75,10 @@ impl Element {
     pub fn new(name: &str, attrs: Vec<(&str, &str)>, children: Vec<Node>) -> Self {
         Self {
             name: name.to_string(),
-            attrs: attrs.into_iter().map(|(k, v)| (k.to_string(), v.to_string())).collect(),
+            attrs: attrs
+                .into_iter()
+                .map(|(k, v)| (k.to_string(), v.to_string()))
+                .collect(),
             children,
         }
     }

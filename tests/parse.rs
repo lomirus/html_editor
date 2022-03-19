@@ -1,4 +1,5 @@
-use html_editor::{parse, Editable, Htmlifiable};
+use html_editor::parse;
+use html_editor::prelude::*;
 
 #[test]
 fn paired_tag() {
@@ -52,20 +53,29 @@ fn matched() {
                 <span></span>
             </span>
         </span>"#,
-    ).unwrap().trim().html();
+    )
+    .unwrap()
+    .trim()
+    .html();
     let b = parse(
         r#"
         <span></span>
         <span></span>
         <span></span>"#,
-    ).unwrap().trim().html();
+    )
+    .unwrap()
+    .trim()
+    .html();
     let c = parse(
         r#"
         <span>
             <span></span>
         </span>
         <span></span>"#,
-    ).unwrap().trim().html();
+    )
+    .unwrap()
+    .trim()
+    .html();
 
     assert_eq!("<span><span><span></span></span></span>", a);
     assert_eq!("<span></span><span></span><span></span>", b);
@@ -88,7 +98,9 @@ fn complex() {
                 <style>div::after{ content: "</div>" }</style>
             </div>
         "#,
-    ).unwrap().trim();
+    )
+    .unwrap()
+    .trim();
 
     println!("{:#?}", a);
 }

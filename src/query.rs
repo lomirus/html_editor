@@ -83,7 +83,8 @@ impl Selector {
     /// Check if the `element` matches the `selector`.
     /// 
     /// ```
-    /// use html_editor::{Node, Element, Selector, Htmlifiable};
+    /// use html_editor::{Node, Element, Selector};
+    /// use html_editor::prelude::*;
     /// 
     /// let element: Element = Element::new(
     ///     "div",
@@ -143,7 +144,8 @@ pub trait Queryable {
     /// Query the node in `self` for the given selector.
     ///
     /// ```
-    /// use html_editor::{parse, Element, Selector, Queryable};
+    /// use html_editor::{parse, Element, Selector};
+    /// use html_editor::prelude::*;
     ///
     /// let html = r#"
     ///     <!DOCTYPE html>
@@ -165,7 +167,8 @@ pub trait Queryable {
     /// Query all the nodes in `self` for the given selector.
     /// 
     /// ```
-    /// use html_editor::{parse, Element, Selector, Queryable};
+    /// use html_editor::{parse, Element, Selector};
+    /// use html_editor::prelude::*;
     ///
     /// let html = r#"
     ///     <!DOCTYPE html>

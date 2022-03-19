@@ -1,4 +1,5 @@
-use html_editor::{parse, Htmlifiable, Editable};
+use html_editor::parse;
+use html_editor::prelude::*;
 
 const HTML: &str = r#"
     <div>

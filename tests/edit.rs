@@ -1,4 +1,5 @@
-use html_editor::{parse, Editable, Htmlifiable, Node, Selector};
+use html_editor::{parse, Node, Selector};
+use html_editor::prelude::*;
 
 const HTML: &str = r#"
     <!DOCTYPE html>
