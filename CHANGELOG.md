@@ -1,3 +1,19 @@
+## v0.4.0 (2022-03-19)
+
+### Fix
+
+- Fails to parse if closing tag is seperated by new-line, like`<a></a\n>`. Closes #1.
+
+### Refactor
+
+- Add the `prelude` module. Now you can simply import `Editable`, `Htmlifiable` and `Queryable` all just by `use html_editor::prelude::*;`;
+- `trim` method becomes `(&mut self) -> &mut Self` from `(self) -> Self`.
+- Replace the `try_into_element()` with `into_element()`, which simplifies the common use: `try_into_element().unwrap()`
+
+### Documentation
+
+- Add more examples.
+
 ## v0.3.0 (2022-01-28)
 
 ### Refactor
