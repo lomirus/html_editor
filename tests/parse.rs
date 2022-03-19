@@ -84,7 +84,7 @@ fn matched() {
 
 #[test]
 fn complex() {
-    let a = parse(
+    let mut dom = parse(
         r#"
             <input value="<p value='haha'></p>" disable placeholder=input>
             <input value="\"\"''/>">
@@ -99,8 +99,8 @@ fn complex() {
             </div>
         "#,
     )
-    .unwrap()
-    .trim();
+    .unwrap();
+    dom.trim();
 
-    println!("{:#?}", a);
+    println!("{:#?}", dom);
 }

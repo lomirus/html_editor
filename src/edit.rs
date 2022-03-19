@@ -3,7 +3,7 @@ use crate::{Element, Node, Selector};
 /// Used to insert or remove elements by `Selector`, and trim the dom.
 pub trait Editable {
     /// Remove all empty text nodes from `self`.
-    /// 
+    ///
     /// ```
     /// use html_editor::parse;
     /// use html_editor::prelude::*;
@@ -14,20 +14,20 @@ pub trait Editable {
     ///         <head></head>
     ///         <body></body>
     ///     </html>"#;
-    /// 
+    ///
     /// let html = parse(html).unwrap().trim().html();
     /// assert_eq!(html, r#"<!DOCTYPE html><html><head></head><body></body></html>"#)
     /// ```
-    fn trim(self) -> Self;
+    fn trim(&mut self) -> &mut Self;
 
     /// Insert `node` as the last child to all elements that matches the `selector`.
-    /// 
+    ///
     /// ```
     /// use html_editor::{parse, Node, Selector};
     /// use html_editor::prelude::*;
     ///
     /// let html = r#"<div><span>Ok</span></div>"#;
-    /// 
+    ///
     /// let selector = Selector::from("div");
     /// let html = parse(html)
     ///     .unwrap()
@@ -40,9 +40,9 @@ pub trait Editable {
     /// assert_eq!(html, r#"<div><span>Ok</span><span>Cancel</span></div>"#)
     /// ```
     fn insert_to(&mut self, selector: &Selector, target: Node) -> &mut Self;
-    
+
     /// Remove all elements that matches the `selector`.
-    /// 
+    ///
     /// ```
     /// use html_editor::{parse, Selector};
     /// use html_editor::prelude::*;
@@ -53,7 +53,7 @@ pub trait Editable {
     ///     <div class="results"></div>
     ///     <div class="ad"></div>
     /// </div>"#;
-    /// 
+    ///
     /// let selector = Selector::from(".ad");
     /// let html = parse(html).unwrap().remove_by(&selector).html();
     /// assert_eq!(html, r#"
@@ -67,31 +67,23 @@ pub trait Editable {
 }
 
 impl Editable for Vec<Node> {
-    fn trim(self) -> Self {
-        let mut nodes: Vec<Node> = Vec::new();
-        for node in self {
+    fn trim(&mut self) -> &mut Self {
+        self.retain(|node| {
             match node {
-                Node::Element {
-                    name,
-                    attrs,
-                    children,
-                } => nodes.push(Node::Element {
-                    name,
-                    attrs,
-                    children: children.trim(),
-                }),
-                Node::Text(text) => {
-                    if text.trim() != "" {
-                        nodes.push(Node::Text(text));
-                    }
-                }
-                Node::Comment(_) => {}
-                Node::Doctype => nodes.push(node),
+                Node::Doctype => true,
+                Node::Comment(_) => false,
+                Node::Text(text) => !text.trim().is_empty(),
+                Node::Element { .. } => true
+            }
+        });
+        for node in self.iter_mut() {
+            if let Node::Element { children, .. } = node {
+                children.trim();
             }
         }
-        nodes
+        self
     }
-    
+
     fn insert_to(&mut self, selector: &Selector, target: Node) -> &mut Self {
         for node in self.iter_mut() {
             if let Node::Element {
@@ -135,12 +127,9 @@ impl Editable for Vec<Node> {
 }
 
 impl Editable for Element {
-    fn trim(self) -> Self {
-        Element {
-            name: self.name,
-            attrs: self.attrs,
-            children: self.children.trim(),
-        }
+    fn trim(&mut self) -> &mut Self {
+        self.children.trim();
+        self
     }
 
     fn insert_to(&mut self, selector: &Selector, target: Node) -> &mut Self {
