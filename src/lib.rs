@@ -1,4 +1,37 @@
 //! `html_editor` is a simple html parser and editor.
+//!
+//! Example:
+//! ```
+//! use html_editor::prelude::*;
+//! use html_editor::{parse, Node, Selector};
+//! 
+//! // You can create dom nodes by parsing html string.
+//! let html = r#"
+//!     <!doctype html>
+//!     <html>
+//!         <head>
+//!         </head>
+//!         <body>
+//!         </body>
+//!     </html>
+//! "#;
+//! let mut dom = parse(html).unwrap();
+//! 
+//! // Or you can create a node by some built-in methods like below.
+//! let app: Node = Node::new_element("div", vec![("id", "app")], vec![]);
+//!
+//! // Here shows how to edit the nodes and turn it back to html.
+//! let html = dom
+//!     .remove_by(&Selector::from("head"))
+//!     .insert_to(&Selector::from("body"), app)
+//!     .trim()
+//!     .html();
+//!
+//! assert_eq!(
+//!     html,
+//!     r#"<!DOCTYPE html><html><body><div id="app"></div></body></html>"#
+//! );
+//! ```
 
 mod data;
 mod edit;
