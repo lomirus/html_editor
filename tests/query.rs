@@ -1,5 +1,5 @@
-use html_editor::prelude::*;
-use html_editor::{parse, Selector};
+use html_editor::operation::*;
+use html_editor::parse;
 
 const HTML: &str = r#"
     <div>
@@ -26,10 +26,7 @@ fn nodes_query_all() {
 fn element_query() {
     let nodes = parse(HTML).unwrap();
     let node = nodes.into_iter().nth(1).unwrap();
-    let element = node
-        .into_element()
-        .query(&Selector::from("span"))
-        .unwrap();
+    let element = node.into_element().query(&Selector::from("span")).unwrap();
     println!("{:?}", element);
 }
 
@@ -37,9 +34,7 @@ fn element_query() {
 fn element_query_all() {
     let nodes = parse(HTML).unwrap();
     let node = nodes.into_iter().nth(1).unwrap();
-    let elements = node
-        .into_element()
-        .query_all(&Selector::from("span"));
+    let elements = node.into_element().query_all(&Selector::from("span"));
     println!("{:?}", elements);
 }
 

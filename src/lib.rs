@@ -2,8 +2,8 @@
 //!
 //! Example:
 //! ```
-//! use html_editor::prelude::*;
-//! use html_editor::{parse, Node, Selector};
+//! use html_editor::operation::*;
+//! use html_editor::{parse, Node};
 //!
 //! // You can create dom nodes by parsing html string.
 //! let html = r#"
@@ -34,16 +34,12 @@
 //! ```
 
 mod data;
-mod edit;
-mod html;
 mod parse;
-mod query;
 
-pub mod prelude;
+pub mod operation;
 
 pub use parse::parse;
 pub use parse::try_parse;
-pub use query::Selector;
 
 /// Basic node of dom
 #[derive(Debug, Clone)]

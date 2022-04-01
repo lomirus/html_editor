@@ -1,12 +1,12 @@
 use crate::{data::VOID_TAGS, Element, Node};
 
-/// Used to be converted to html string
+/// Convert to html string.
 pub trait Htmlifiable {
     /// Convert the object to html string.
     ///
     /// ```
     /// use html_editor::{Node, Element};
-    /// use html_editor::prelude::*;
+    /// use html_editor::operation::*;
     ///
     /// let node: Node = Node::new_element(
     ///     "script",

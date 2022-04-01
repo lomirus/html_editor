@@ -1,5 +1,5 @@
 use html_editor::{parse, try_parse};
-use html_editor::prelude::*;
+use html_editor::operation::*;
 
 #[test]
 fn paired_tag() {
