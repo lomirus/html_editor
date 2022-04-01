@@ -42,6 +42,7 @@ mod query;
 pub mod prelude;
 
 pub use parse::parse;
+pub use parse::try_parse;
 pub use query::Selector;
 
 /// Basic node of dom
@@ -75,9 +76,10 @@ impl Node {
 
     /// Convert the node into an element. 
     /// 
-    /// Note: The program will panic if it fails to convert.
+    /// Warning: The program will panic if it fails to convert.
     /// So take care to use this method unless you are sure.
     /// 
+    /// Example:
     /// ```
     /// use html_editor::{Node, Element};
     /// 
@@ -85,7 +87,7 @@ impl Node {
     /// let a: Element = a.into_element();
     /// 
     /// let b: Node = Node::Text("hello".to_string());
-    /// // This will panic at 'Text("hello") is not an element'
+    /// // The next line will panic at 'Text("hello") is not an element'
     /// // let b: Element = a.into_element();
     /// ```
     pub fn into_element(self) -> Element {
