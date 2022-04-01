@@ -1,12 +1,12 @@
 // Let's take `<img src="example.png" alt=image>` for example.
 enum AttrPos {
-    // This including `src`, `alt`
+    // This includes `src`, `alt`
     Key,
-    // This including `=`
+    // This includes `=`
     Equal,
-    // This including `example.png`, `image`
+    // This includes `example.png`, `image`
     Value(Option<char>),
-    // This including ` `
+    // This includes ` `
     Space,
 }
 

@@ -109,5 +109,8 @@ fn complex() {
 fn fault_tolerance() {
     assert_eq!(try_parse(r#"<div><a>Ipsum"#).html(), "<div><a>Ipsum</a></div>");
     assert_eq!(try_parse(r#"<div>Ipsum</a>"#).html(), "<div>Ipsum</div>");
-    assert_eq!(try_parse(r#"<span><span>Ipsum</span>"#).html(), "<span><span>Ipsum</span></span>");
+    assert_eq!(
+        try_parse(r#"<span><span>Ipsum</span>"#).html(),
+        "<span><span>Ipsum</span></span>"
+    );
 }
