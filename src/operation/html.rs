@@ -1,6 +1,6 @@
 use crate::{data::VOID_TAGS, Doctype, Element, Node};
 
-/// Convert to html string.
+/// Stringify into html.
 pub trait Htmlifiable {
     /// Convert the object to html string.
     ///

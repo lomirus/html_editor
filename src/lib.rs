@@ -1,11 +1,11 @@
 //! `html_editor` is a simple html parser and editor.
 //!
-//! Example:
+//! Quick Start:
 //! ```
 //! use html_editor::operation::*;
 //! use html_editor::{parse, Node};
 //!
-//! // You can create dom nodes by parsing html string.
+//! // You can create DOM nodes by parsing html string.
 //! let html = r#"
 //!     <!doctype html>
 //!     <html>
@@ -48,7 +48,7 @@ pub enum Doctype {
     Xml { version: String, encoding: String },
 }
 
-/// Basic node of dom
+/// Node of DOM
 #[derive(Debug, Clone)]
 pub enum Node {
     Element {

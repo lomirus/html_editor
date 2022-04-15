@@ -1,7 +1,7 @@
 use super::Selector;
 use crate::{Element, Node};
 
-/// Query one/all element(s) by [`Selector`].
+/// Query the specific element(s) by [`Selector`].
 pub trait Queryable {
     /// Query the node in `self` for the given selector.
     ///

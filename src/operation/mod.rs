@@ -1,4 +1,4 @@
-//! Edit, Query or Htmlify the [`Element`](struct.Element.html) / [`Node`](enum.Node.html).
+//! All traits for editing, querying and stringifying the [`Element`](struct.Element.html) / [`Node`](enum.Node.html).
 
 mod edit;
 mod html;

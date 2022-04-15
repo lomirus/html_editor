@@ -327,13 +327,22 @@ pub fn parse(html: &str) -> Result<Vec<Node>, String> {
     dom
 }
 
-/// It's just like the function [`parse()`](parse), but with fault tolerance
-/// feature ---- whatever the input is, it will try to return a vector of nodes
-/// without errors. It can parse some illegal html code  like `<div><a>Ipsum`
+/// Alternative for [`parse()`](parse) with fault tolerance
+/// feature.
+/// 
+/// Whatever the input is, it will try to return a vector of nodes
+/// without errors. It can parse some illegal html code like `<div><a>Ipsum`
 /// or `<div>Ipsum</a>`.
 ///
 /// But we still suggest you to use [`parse()`](parse) unless neccessary for better
 /// error handling.
+/// 
+/// ```
+/// use html_editor::{try_parse, operation::Htmlifiable};
+/// 
+/// let result: String = try_parse("<div><a>Ipsum</div>").html();
+/// assert_eq!(result, "<div><a>Ipsum</a></div>");
+/// ```
 pub fn try_parse(html: &str) -> Vec<Node> {
     let stack = html_to_stack(html).unwrap_or(vec![]);
     // println!("{:?}", stack);
