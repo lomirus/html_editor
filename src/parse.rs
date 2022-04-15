@@ -1,3 +1,11 @@
+// TODO:
+//
+// Maybe we could have more elegant and concise code?
+// I will try to figure out a better way to parse when
+// am availible. Busy now for me :(
+//
+// If you have any idea, feel free to post an issue.
+
 mod attrs;
 mod token;
 
