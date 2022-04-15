@@ -41,7 +41,7 @@ pub mod operation;
 pub use parse::parse;
 pub use parse::try_parse;
 
-// Doctype of Html or Xml
+/// Doctype of Html or Xml
 #[derive(Clone, Debug)]
 pub enum Doctype {
     Html,
