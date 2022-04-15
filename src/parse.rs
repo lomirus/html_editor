@@ -320,7 +320,7 @@ pub fn parse(html: &str) -> Result<Vec<Node>, String> {
 }
 
 /// It's just like the function [`parse()`](parse), but with fault tolerance
-/// future ---- whatever the input is, it will try to return a vector of nodes
+/// feature ---- whatever the input is, it will try to return a vector of nodes
 /// without errors. It can parse some illegal html code  like `<div><a>Ipsum` 
 /// or `<div>Ipsum</a>`.
 /// 
