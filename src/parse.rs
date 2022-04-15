@@ -24,10 +24,9 @@ fn html_to_stack(html: &str) -> Result<Vec<Token>, String> {
     for ch in html.chars() {
         if let Some(quote) = in_quotes {
             if ch == quote {
-                let previous_char = chars_stack
+                let previous_char = *chars_stack
                     .last()
-                    .expect("cannot get the last char in chars stack")
-                    .clone();
+                    .expect("cannot get the last char in chars stack");
                 if previous_char != '\\' {
                     in_quotes = None;
                 }
@@ -89,7 +88,7 @@ fn html_to_stack(html: &str) -> Result<Vec<Token>, String> {
                     chars_stack = Vec::new();
                     // Push the tag with the text we just got to the token stack.
                     let tag = Token::from(tag_text.clone())
-                        .expect(format!("Invalid tag: {}", tag_text).as_str());
+                        .unwrap_or_else(|| panic!("Invalid tag: {}", tag_text));
                     token_stack.push(tag.clone());
                     // Handle special tags
                     if let Token::Start(tag_name, _) = tag {
@@ -146,15 +145,13 @@ fn stack_to_dom(token_stack: Vec<Token>) -> Result<Vec<Node>, String> {
                         start_tag_index = i;
                         start_tags_stack.push(Token::Start(tag.clone(), attrs.clone()));
                     }
+                } else if is_void_tag {
+                    // You do not need to push the void tag to the stack
+                    // like above, because it must be inside the the
+                    // element of the first start tag, and this element
+                    // will then be pushed to the stack recursively.
                 } else {
-                    if is_void_tag {
-                        // You do not need to push the void tag to the stack
-                        // like above, because it must be inside the the
-                        // element of the first start tag, and this element
-                        // will then be pushed to the stack recursively.
-                    } else {
-                        start_tags_stack.push(Token::Start(tag.clone(), attrs.clone()));
-                    }
+                    start_tags_stack.push(Token::Start(tag.clone(), attrs.clone()));
                 }
             }
             Token::End(tag) => {
@@ -213,15 +210,13 @@ fn try_stack_to_dom(token_stack: Vec<Token>) -> Vec<Node> {
                         start_tag_index = i;
                         start_tags_stack.push(Token::Start(tag.clone(), attrs.clone()));
                     }
+                } else if is_void_tag {
+                    // You do not need to push the void tag to the stack
+                    // like above, because it must be inside the the
+                    // element of the first start tag, and this element
+                    // will then be pushed to the stack recursively.
                 } else {
-                    if is_void_tag {
-                        // You do not need to push the void tag to the stack
-                        // like above, because it must be inside the the
-                        // element of the first start tag, and this element
-                        // will then be pushed to the stack recursively.
-                    } else {
-                        start_tags_stack.push(Token::Start(tag.clone(), attrs.clone()));
-                    }
+                    start_tags_stack.push(Token::Start(tag.clone(), attrs.clone()));
                 }
             }
             Token::End(tag) => {
@@ -323,8 +318,8 @@ fn try_stack_to_dom(token_stack: Vec<Token>) -> Vec<Node> {
 pub fn parse(html: &str) -> Result<Vec<Node>, String> {
     let stack = html_to_stack(html)?;
     // println!("{:#?}", stack);
-    let dom = stack_to_dom(stack);
-    dom
+    
+    stack_to_dom(stack)
 }
 
 /// Alternative for [`parse()`](parse) with fault tolerance
@@ -344,8 +339,8 @@ pub fn parse(html: &str) -> Result<Vec<Node>, String> {
 /// assert_eq!(result, "<div><a>Ipsum</a></div>");
 /// ```
 pub fn try_parse(html: &str) -> Vec<Node> {
-    let stack = html_to_stack(html).unwrap_or(vec![]);
+    let stack = html_to_stack(html).unwrap_or_default();
     // println!("{:?}", stack);
-    let dom = try_stack_to_dom(stack);
-    dom
+    
+    try_stack_to_dom(stack)
 }

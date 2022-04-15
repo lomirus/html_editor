@@ -55,7 +55,7 @@ pub fn parse(attr_str: String) -> Vec<(String, String)> {
                 }
                 Some(quote) => {
                     if ch == quote {
-                        if chars_stack.len() == 0 {
+                        if chars_stack.is_empty() {
                             value_stack.push(String::new());
                             attr_pos = AttrPos::Space;
                             continue;
@@ -97,7 +97,7 @@ pub fn parse(attr_str: String) -> Vec<(String, String)> {
                 value_stack.push(String::new());
             }
             AttrPos::Value(delimiter) => {
-                if let None = delimiter {
+                if delimiter.is_none() {
                     value_stack.push(str);
                 } else {
                     panic!("{}", err_info)

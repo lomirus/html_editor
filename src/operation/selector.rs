@@ -99,11 +99,11 @@ impl Selector {
     pub fn matches(&self, element: &Element) -> bool {
         let mut matches = true;
 
-        if self.tag != "" && element.name != self.tag {
+        if !self.tag.is_empty() && element.name != self.tag {
             matches = false;
         }
 
-        if self.class != "" {
+        if !self.class.is_empty() {
             let element_class = element.attrs.iter().find(|(key, _)| key == "class");
             match element_class {
                 Some(class) => {
@@ -112,14 +112,14 @@ impl Selector {
                     }
                 }
                 None => {
-                    if self.class != "" {
+                    if !self.class.is_empty() {
                         matches = false;
                     }
                 }
             }
         }
 
-        if self.id != "" {
+        if !self.id.is_empty() {
             let element_id = element.attrs.iter().find(|(key, _)| key == "id");
             match element_id {
                 Some(id) => {
@@ -128,7 +128,7 @@ impl Selector {
                     }
                 }
                 None => {
-                    if self.id != "" {
+                    if !self.id.is_empty() {
                         matches = false;
                     }
                 }

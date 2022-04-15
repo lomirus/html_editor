@@ -57,7 +57,7 @@ impl Token {
                 .1
                 .to_string();
             Some(Self::Doctype(Doctype::Xml { version, encoding }))
-        } else if tag.starts_with("<") {
+        } else if tag.starts_with('<') {
             let tag_name_start = tag[1..tag.len()]
                 .chars()
                 .position(|x| x != ' ')

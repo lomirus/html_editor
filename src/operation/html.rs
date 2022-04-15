@@ -29,7 +29,7 @@ pub trait Htmlifiable {
 
 impl Htmlifiable for Element {
     fn html(&self) -> String {
-        if self.attrs.len() == 0 {
+        if self.attrs.is_empty() {
             return if VOID_TAGS.contains(&self.name.as_str()) {
                 format!("<{}>", self.name)
             } else {
@@ -41,7 +41,7 @@ impl Htmlifiable for Element {
             .iter()
             .map(|(k, v)| {
                 if v.is_empty() {
-                    format!("{}", k)
+                    k.to_string()
                 } else {
                     format!(r#"{}="{}""#, k, v)
                 }

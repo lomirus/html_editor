@@ -60,10 +60,8 @@ impl Queryable for Vec<Node> {
 
                 if selector.matches(&element) {
                     return Some(element);
-                } else {
-                    if let Some(elem) = element.query(selector) {
-                        return Some(elem);
-                    }
+                } else if let Some(elem) = element.query(selector) {
+                    return Some(elem);
                 }
             }
         }
