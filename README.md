@@ -10,7 +10,7 @@ Pure, simple and elegant HTML parser and editor.
 ### Parse HTML segment/document
 
 ```rust
-let document = parse("<!doctype html><html><head></head><body></body></html>")?;
+let document: Vec<Node> = parse("<!doctype html><html><head></head><body></body></html>")?;
 println!("{:#?}", document);
 ```
 
@@ -18,7 +18,9 @@ Output:
 
 ```rust
 [
-    Doctype,
+    Doctype(
+        Html,
+    ),
     Element {
         name: "html",
         attrs: {},
@@ -38,21 +40,19 @@ Output:
 ]
 ```
 
-### Query an element by classname
+You can also use `try_parse` to parse the html which contains tolerable errors
 
 ```rust
-// let html = r#"..."#
-let nodes = parse(html)?;
-let selector: Selector = Selector::from(".last");
-let element: Element = nodes.query(&selector).unwrap();
+let document: Vec<Node> = try_parse("<div><span>Ipsum</div>");
 ```
 
-### Query all elements by tag
+### Query an element / elements by selector
 
 ```rust
 // let html = r#"..."#
 let nodes = parse(html)?;
-let selector: Selector = Selector::from("span");
+let selector: Selector = Selector::from(".box");
+let element: Element = nodes.query(&selector).unwrap();
 let elements: Vec<Element> = nodes.query_all(&selector);
 ```
 
