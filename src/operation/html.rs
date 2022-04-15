@@ -1,4 +1,4 @@
-use crate::{data::VOID_TAGS, Element, Node};
+use crate::{data::VOID_TAGS, Doctype, Element, Node};
 
 /// Convert to html string.
 pub trait Htmlifiable {
@@ -69,7 +69,12 @@ impl Htmlifiable for Node {
             Node::Element { .. } => self.clone().into_element().html(),
             Node::Text(text) => text.to_string(),
             Node::Comment(comment) => format!("<!--{}-->", comment),
-            Node::Doctype => "<!DOCTYPE html>".to_string(),
+            Node::Doctype(doctype) => match &doctype {
+                Doctype::Html => "<!DOCTYPE html>".to_string(),
+                Doctype::Xml { version, encoding } => {
+                    format!(r#"<?xml version="{}" encoding="{}"?>"#, version, encoding)
+                }
+            },
         }
     }
 }

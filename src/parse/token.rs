@@ -1,5 +1,5 @@
-use crate::Node;
 use crate::parse::attrs;
+use crate::{Node, Doctype};
 
 #[derive(Debug, Clone)]
 pub enum Token {
@@ -10,7 +10,7 @@ pub enum Token {
     // Like `<div />`
     Closing(String, Vec<(String, String)>),
     // Like `<!doctype html>`
-    Doctype,
+    Doctype(Doctype),
     // Like `<!-- comment -->`
     Comment(String),
     // Any text
@@ -40,7 +40,23 @@ impl Token {
         } else if tag.starts_with("<!--") {
             Some(Self::from_comment(tag))
         } else if tag.starts_with("<!") {
-            Some(Self::Doctype)
+            Some(Self::Doctype(Doctype::Html))
+        } else if tag.starts_with("<?") {
+            let attr = tag[2..tag.len() - 2].to_string();
+            let attr = attrs::parse(attr);
+            let version = attr
+                .iter()
+                .find(|(name, _)| name == "version")
+                .expect("cannot find version attribute in xml declaration")
+                .1
+                .to_string();
+            let encoding = attr
+                .iter()
+                .find(|(name, _)| name == "encoding")
+                .expect("cannot find encoding attribute in xml declaration")
+                .1
+                .to_string();
+            Some(Self::Doctype(Doctype::Xml { version, encoding }))
         } else if tag.starts_with("<") {
             let tag_name_start = tag[1..tag.len()]
                 .chars()
@@ -88,7 +104,7 @@ impl Token {
                 attrs,
                 children: Vec::new(),
             },
-            Self::Doctype => Node::Doctype,
+            Self::Doctype(doctype) => Node::Doctype(doctype),
             Self::Comment(comment) => Node::Comment(comment),
             Self::Text(text) => Node::Text(text),
         }

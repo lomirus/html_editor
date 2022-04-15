@@ -71,8 +71,8 @@ impl Editable for Vec<Node> {
     fn trim(&mut self) -> &mut Self {
         self.retain(|node| {
             match node {
-                Node::Doctype => true,
-                Node::Comment(_) => false,
+                Node::Doctype(..) => true,
+                Node::Comment(..) => false,
                 Node::Text(text) => !text.trim().is_empty(),
                 Node::Element { .. } => true
             }

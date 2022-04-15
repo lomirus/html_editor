@@ -41,6 +41,13 @@ pub mod operation;
 pub use parse::parse;
 pub use parse::try_parse;
 
+// Doctype of Html or Xml
+#[derive(Clone, Debug)]
+pub enum Doctype {
+    Html,
+    Xml { version: String, encoding: String },
+}
+
 /// Basic node of dom
 #[derive(Debug, Clone)]
 pub enum Node {
@@ -51,7 +58,7 @@ pub enum Node {
     },
     Text(String),
     Comment(String),
-    Doctype,
+    Doctype(Doctype),
 }
 
 impl Node {

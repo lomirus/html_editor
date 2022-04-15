@@ -1,5 +1,5 @@
-use html_editor::{parse, try_parse};
 use html_editor::operation::*;
+use html_editor::{parse, try_parse};
 
 #[test]
 fn paired_tag() {
@@ -107,10 +107,30 @@ fn complex() {
 
 #[test]
 fn fault_tolerance() {
-    assert_eq!(try_parse(r#"<div><a>Ipsum"#).html(), "<div><a>Ipsum</a></div>");
+    assert_eq!(
+        try_parse(r#"<div><a>Ipsum"#).html(),
+        "<div><a>Ipsum</a></div>"
+    );
     assert_eq!(try_parse(r#"<div>Ipsum</a>"#).html(), "<div>Ipsum</div>");
     assert_eq!(
         try_parse(r#"<span><span>Ipsum</span>"#).html(),
         "<span><span>Ipsum</span></span>"
     );
+}
+
+#[test]
+fn xml() {
+    let mut html = parse(
+        r#"
+            <?xml version="1.0" encoding="UTF-8"?>
+            <message>
+                <log:warning>
+                    Hello World
+                </log:warning>
+            </message>
+        "#,
+    ).unwrap();
+    html.trim();
+    
+    println!("{:#?}", html);
 }
