@@ -1,3 +1,23 @@
+## v0.5.0 (2022-04-16)
+
+### Features
+
+- Add `try_parse` method for the html with tolerable errors by @lomirus in #2;
+- Add support for parsing xml doctype by @lomirus #3;
+- Add associated `Doctype` variant to `Node::Doctype` to distinguish between html and xml by @lomirus. 
+
+### Refactor
+
+- Remove `prelude` module, and replace it with `operation` module by @lomirus, which also moves the `Selector` struct out of the original module to top of this package.
+
+### Chore
+
+- Add benchmarking for the `parse` method by @lomirus, using an 87.0kB html file from wikipedia;
+
+### Documentation
+
+- Readme and other documentation improvements by @lomirus.
+
 ## v0.4.0 (2022-03-19)
 
 ### Fix
