@@ -1,5 +1,5 @@
 use crate::parse::attrs;
-use crate::{Node, Doctype};
+use crate::{Doctype, Node};
 
 #[derive(Debug, Clone)]
 pub enum Token {

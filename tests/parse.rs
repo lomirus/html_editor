@@ -129,8 +129,9 @@ fn xml() {
                 </log:warning>
             </message>
         "#,
-    ).unwrap();
+    )
+    .unwrap();
     html.trim();
-    
+
     println!("{:#?}", html);
 }

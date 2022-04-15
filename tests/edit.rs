@@ -1,5 +1,5 @@
-use html_editor::{parse, Node};
 use html_editor::operation::*;
+use html_editor::{parse, Node};
 
 const HTML: &str = r#"
     <!DOCTYPE html>
@@ -42,7 +42,10 @@ fn insert() {
         Vec::new(),
         vec![Node::Text(r#"console.log("Hello World")"#.to_string())],
     );
-    let html = parse(HTML).unwrap().insert_to(&body_selector, script).html();
+    let html = parse(HTML)
+        .unwrap()
+        .insert_to(&body_selector, script)
+        .html();
     assert_eq!(html, INSERTED_HTML);
 }
 

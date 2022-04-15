@@ -19,19 +19,19 @@ impl Selector {
     ///
     /// For example, `div#app`, `span` would be ok, but `.container > div`,
     /// `#app *` would get unexpected results.
-    /// 
+    ///
     /// ```
     /// use html_editor::operation::Selector;
-    /// 
+    ///
     /// // Ok: Simple tag, class and ID selectors.
     /// let selector = Selector::from("span");
     /// let selector = Selector::from(".class");
     /// let selector = Selector::from("#id");
-    /// 
+    ///
     /// // Ok: Mixed selector
     /// let selector = Selector::from("div#app");
     /// let selector = Selector::from("span.info#first");
-    /// 
+    ///
     /// // Disallowed
     /// let selector = Selector::from("div span");
     /// let selector = Selector::from("a[target=_blank]");
@@ -81,19 +81,19 @@ impl Selector {
     }
 
     /// Check if the `element` matches the `selector`.
-    /// 
+    ///
     /// ```
     /// use html_editor::{Node, Element};
     /// use html_editor::operation::*;
-    /// 
+    ///
     /// let element: Element = Element::new(
     ///     "div",
     ///     vec![("id", "app")],
     ///     vec![Node::Text("Hello World!".to_string())],
     /// );
-    /// 
+    ///
     /// let selector = Selector::from("div#app");
-    /// 
+    ///
     /// assert_eq!(selector.matches(&element), true);
     /// ```
     pub fn matches(&self, element: &Element) -> bool {
@@ -104,7 +104,7 @@ impl Selector {
         }
 
         if self.class != "" {
-            let element_class = element.attrs.iter().find(|(key,_)|key == "class");
+            let element_class = element.attrs.iter().find(|(key, _)| key == "class");
             match element_class {
                 Some(class) => {
                     if self.class != class.1 {
@@ -120,7 +120,7 @@ impl Selector {
         }
 
         if self.id != "" {
-            let element_id = element.attrs.iter().find(|(key,_)|key == "id");
+            let element_id = element.attrs.iter().find(|(key, _)| key == "id");
             match element_id {
                 Some(id) => {
                     if self.id != id.1 {

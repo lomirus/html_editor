@@ -1,5 +1,5 @@
-use html_editor::parse;
 use html_editor::operation::*;
+use html_editor::parse;
 
 const HTML: &str = r#"
     <div>

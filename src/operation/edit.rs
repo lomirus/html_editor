@@ -1,5 +1,5 @@
-use crate::{Element, Node};
 use super::Selector;
+use crate::{Element, Node};
 
 /// Insert or remove elements by [`Selector`], or trim the dom.
 pub trait Editable {
@@ -69,13 +69,11 @@ pub trait Editable {
 
 impl Editable for Vec<Node> {
     fn trim(&mut self) -> &mut Self {
-        self.retain(|node| {
-            match node {
-                Node::Doctype(..) => true,
-                Node::Comment(..) => false,
-                Node::Text(text) => !text.trim().is_empty(),
-                Node::Element { .. } => true
-            }
+        self.retain(|node| match node {
+            Node::Doctype(..) => true,
+            Node::Comment(..) => false,
+            Node::Text(text) => !text.trim().is_empty(),
+            Node::Element { .. } => true,
         });
         for node in self.iter_mut() {
             if let Node::Element { children, .. } = node {

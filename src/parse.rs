@@ -189,7 +189,7 @@ fn try_stack_to_dom(token_stack: Vec<Token>) -> Vec<Node> {
     let mut nodes: Vec<Node> = Vec::new();
     let mut start_tags_stack: Vec<Token> = Vec::new();
     let mut start_tag_index = 0;
-    
+
     for (i, token) in token_stack.iter().enumerate() {
         match token {
             Token::Start(tag, attrs) => {
@@ -219,7 +219,7 @@ fn try_stack_to_dom(token_stack: Vec<Token>) -> Vec<Node> {
             Token::End(tag) => {
                 let start_tag = match start_tags_stack.pop() {
                     Some(token) => token.into_node().into_element(),
-                    // It means the end tag is redundant, so we will omit 
+                    // It means the end tag is redundant, so we will omit
                     // it and just start the next loop.
                     None => continue,
                 };
@@ -321,9 +321,9 @@ pub fn parse(html: &str) -> Result<Vec<Node>, String> {
 
 /// It's just like the function [`parse()`](parse), but with fault tolerance
 /// feature ---- whatever the input is, it will try to return a vector of nodes
-/// without errors. It can parse some illegal html code  like `<div><a>Ipsum` 
+/// without errors. It can parse some illegal html code  like `<div><a>Ipsum`
 /// or `<div>Ipsum</a>`.
-/// 
+///
 /// But we still suggest you to use [`parse()`](parse) unless neccessary for better
 /// error handling.
 pub fn try_parse(html: &str) -> Vec<Node> {
