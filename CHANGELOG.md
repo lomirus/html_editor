@@ -3,7 +3,7 @@
 ### Features
 
 - Add `try_parse` method for the html with tolerable errors by @lomirus in #2;
-- Add support for parsing xml doctype by @lomirus #3;
+- Add support for parsing xml doctype by @lomirus in #3;
 - Add associated `Doctype` variant to `Node::Doctype` to distinguish between html and xml by @lomirus. 
 
 ### Refactor
