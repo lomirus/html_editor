@@ -293,7 +293,7 @@ fn try_stack_to_dom(token_stack: Vec<Token>) -> Vec<Node> {
 ///     },
 /// ]
 /// [
-///     Doctype,
+///     Doctype(Html),
 ///     Element {
 ///         name: "html",
 ///         attrs: {},
