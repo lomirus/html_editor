@@ -1,3 +1,9 @@
+## v0.5.1 (2022-04-27)
+
+### Fix
+
+- Fixed that the selector doesn't work for multiple class element by @lomirus in #4;
+
 ## v0.5.0 (2022-04-16)
 
 ### Features
