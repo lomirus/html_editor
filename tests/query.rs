@@ -44,3 +44,11 @@ fn class_query() {
     let element = nodes.query(&Selector::from(".last")).unwrap();
     println!("{:?}", element);
 }
+
+#[test]
+fn html_editor_multiple_class_parsing() {
+    let snippet = r#"<div class="a b"></div>"#;
+    let nodes = parse(snippet).unwrap();
+    let selector = Selector::from(".a");
+    nodes.query(&selector).unwrap();
+}

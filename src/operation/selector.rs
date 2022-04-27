@@ -107,15 +107,16 @@ impl Selector {
             let element_class = element.attrs.iter().find(|(key, _)| key == "class");
             match element_class {
                 Some(class) => {
-                    if self.class != class.1 {
+                    let class = &class.1;
+                    let class_list: Vec<String> = class
+                        .split(' ')
+                        .map(|name| name.trim().to_string())
+                        .collect();
+                    if !class_list.contains(&self.class) {
                         matches = false;
                     }
                 }
-                None => {
-                    if !self.class.is_empty() {
-                        matches = false;
-                    }
-                }
+                None => matches = false,
             }
         }
 
