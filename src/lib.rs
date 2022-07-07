@@ -71,10 +71,7 @@ impl Node {
     /// assert_eq!(Node::Text("Lorem Ipsum".to_string()).is_element(), false);
     /// ```
     pub fn is_element(&self) -> bool {
-        match self {
-            Node::Element { .. } => true,
-            _ => false,
-        }
+        matches!(self, Node::Element { .. })
     }
 
     /// Convert the node into an element.

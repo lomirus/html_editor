@@ -108,11 +108,11 @@ impl Selector {
             match element_class {
                 Some(class) => {
                     let class = &class.1;
-                    let class_list: Vec<String> = class
+                    if !class
                         .split(' ')
                         .map(|name| name.trim().to_string())
-                        .collect();
-                    if !class_list.contains(&self.class) {
+                        .any(|x| x == self.class)
+                    {
                         matches = false;
                     }
                 }
