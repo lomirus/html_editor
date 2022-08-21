@@ -3,17 +3,17 @@ use crate::{Doctype, Node};
 
 #[derive(Debug, Clone)]
 pub enum Token {
-    // Like `<div>`, including `<img>`, `<input>`, etc.
+    /// Like `<div>`, including `<img>`, `<input>`, etc.
     Start(String, Vec<(String, String)>),
-    // Like `</div>`
+    /// Like `</div>`
     End(String),
-    // Like `<div />`
+    /// Like `<div />`
     Closing(String, Vec<(String, String)>),
-    // Like `<!doctype html>`
+    /// Like `<!doctype html>`
     Doctype(Doctype),
-    // Like `<!-- comment -->`
+    /// Like `<!-- comment -->`
     Comment(String),
-    // Any text
+    /// Any text
     Text(String),
 }
 

@@ -1,16 +1,16 @@
 // Let's take `<img src="example.png" alt=image>` for example.
 enum AttrPos {
-    // This includes `src`, `alt`
+    /// Includes `src`, `alt`
     Key,
-    // This includes `=`
+    /// Includes `=`
     Equal,
-    // This includes `example.png`, `image`
+    /// Includes `example.png`, `image`
     Value(Option<char>),
-    // This includes ` `
+    /// Includes ` `
     Space,
 }
 
-// Valid `attr_str` like: `src="example.png" alt=example disabled`
+/// Valid `attr_str` like: `src="example.png" alt=example disabled`
 pub fn parse(attr_str: String) -> Vec<(String, String)> {
     let mut chars_stack: Vec<char> = Vec::new();
     let mut key_stack: Vec<String> = Vec::new();
