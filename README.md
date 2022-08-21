@@ -9,7 +9,7 @@
 
 # HTML Editor
 
-Pure, simple and elegant HTML parser and editor.
+Pure and simple HTML parser and editor.
 
 ## Examples
 
