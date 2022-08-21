@@ -18,7 +18,7 @@ pub enum Token {
 }
 
 impl Token {
-    pub fn from(tag: String) -> Option<Self> {
+    pub fn from(tag: String) -> Result<Self, String> {
         if tag.ends_with("/>") {
             let tag_name_start = tag[1..tag.len()]
                 .chars()
@@ -34,13 +34,13 @@ impl Token {
             };
             let tag_name = tag[tag_name_start..tag_name_end].to_string();
             let attr_str = tag[tag_name_end..tag.len() - 2].trim().to_string();
-            Some(Self::Closing(tag_name, attrs::parse(attr_str)))
+            Ok(Self::Closing(tag_name, attrs::parse(attr_str)))
         } else if tag.starts_with("</") {
-            Some(Self::End(tag[2..tag.len() - 1].trim().to_string()))
+            Ok(Self::End(tag[2..tag.len() - 1].trim().to_string()))
         } else if tag.starts_with("<!--") {
-            Some(Self::from_comment(tag))
+            Ok(Self::from_comment(tag))
         } else if tag.starts_with("<!") {
-            Some(Self::Doctype(Doctype::Html))
+            Ok(Self::Doctype(Doctype::Html))
         } else if tag.starts_with("<?") {
             let attr = tag[2..tag.len() - 2].to_string();
             let attr = attrs::parse(attr);
@@ -56,25 +56,25 @@ impl Token {
                 .expect("cannot find encoding attribute in xml declaration")
                 .1
                 .to_string();
-            Some(Self::Doctype(Doctype::Xml { version, encoding }))
+            Ok(Self::Doctype(Doctype::Xml { version, encoding }))
         } else if tag.starts_with('<') {
             let tag_name_start = tag[1..tag.len()]
                 .chars()
-                .position(|x| x != ' ')
+                .position(|x| !x.is_ascii_whitespace())
                 .expect("tag name cannot be all spaces after \"<\"")
                 + 1;
             let tag_name_end_option = tag[tag_name_start..tag.len()]
                 .chars()
-                .position(|x| x == ' ');
+                .position(|x| x.is_ascii_whitespace());
             let tag_name_end = match tag_name_end_option {
                 Some(end) => end + tag_name_start,
                 None => tag.len() - 1,
             };
             let tag_name = tag[tag_name_start..tag_name_end].to_string();
             let attr_str = tag[tag_name_end..tag.len() - 1].trim().to_string();
-            Some(Self::Start(tag_name, attrs::parse(attr_str)))
+            Ok(Self::Start(tag_name, attrs::parse(attr_str)))
         } else {
-            None
+            Err(format!("Invalid tag: {}", tag))
         }
     }
 

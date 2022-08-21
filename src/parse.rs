@@ -87,8 +87,7 @@ fn html_to_stack(html: &str) -> Result<Vec<Token>, String> {
                     let tag_text = String::from_iter(chars_stack);
                     chars_stack = Vec::new();
                     // Push the tag with the text we just got to the token stack.
-                    let tag = Token::from(tag_text.clone())
-                        .unwrap_or_else(|| panic!("Invalid tag: {}", tag_text));
+                    let tag = Token::from(tag_text.clone())?;
                     token_stack.push(tag.clone());
                     // Handle special tags
                     if let Token::Start(tag_name, _) = tag {
