@@ -97,6 +97,8 @@ fn complex() {
                 <script>"</div>"</script>
                 <style>div::after{ content: "</div>" }</style>
             </div>
+            <div 
+            ></div>
         "#,
     )
     .unwrap();
