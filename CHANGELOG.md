@@ -1,3 +1,9 @@
+## v0.5.2 (2022-08-21)
+
+### Fix
+
+- Failed to parse tags with whitespaces inside (exclude ` `), like `<div\n></div>` and `<div\t></div>`.
+
 ## v0.5.1 (2022-04-27)
 
 ### Fix
