@@ -34,12 +34,12 @@ impl Selector {
             .attrs
             .iter()
             .find(|(key, _)| key == "class")
-            .and_then(|(_, v)| Some(v.split(' ').map(|name| name.trim()).collect::<Vec<_>>()));
+            .map(|(_, v)| v.split(' ').map(|name| name.trim()).collect::<Vec<_>>());
         let element_id = element
             .attrs
             .iter()
             .find(|(key, _)| key == "id")
-            .and_then(|(_, v)| Some(v));
+            .map(|(_, v)| v);
 
         self.0.iter().any(|compound_selector| {
             compound_selector
@@ -85,11 +85,6 @@ impl From<&str> for Selector {
     /// let selector = Selector::from("a[target=_blank]");
     /// ```
     fn from(selector: &str) -> Self {
-        Selector(
-            selector
-                .split(',')
-                .map(|s| CompoundSelector::from(s))
-                .collect(),
-        )
+        Selector(selector.split(',').map(CompoundSelector::from).collect())
     }
 }

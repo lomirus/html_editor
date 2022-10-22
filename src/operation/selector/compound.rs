@@ -24,9 +24,9 @@ impl From<&str> for CompoundSelector {
 
             use SimpleSelector::*;
             simple_selectors.push(match start_char {
-                '.' => Class((&selector[start + 1..end]).to_string()),
-                '#' => Id((&selector[start + 1..end]).to_string()),
-                _ => Tag((&selector[start..end]).to_string()),
+                '.' => Class(selector[start + 1..end].to_string()),
+                '#' => Id(selector[start + 1..end].to_string()),
+                _ => Tag(selector[start..end].to_string()),
             });
 
             start = end;
