@@ -65,9 +65,9 @@ impl Selector {
 impl From<&str> for Selector {
     /// Generate a selector from given string, following the CSS
     /// selector standard.
-    /// 
+    ///
     /// Not all rules are supported. Below shows the rules currently
-    /// supported: 
+    /// supported:
     ///
     /// ```
     /// use html_editor::operation::Selector;
