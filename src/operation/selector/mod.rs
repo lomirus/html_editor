@@ -1,6 +1,9 @@
-use std::vec;
+mod compound;
+mod simple;
 
 use crate::Element;
+
+use self::{compound::CompoundSelector, simple::SimpleSelector};
 
 /// Basic selector. It follows the
 /// [CSS selector](https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Selectors)
@@ -8,22 +11,6 @@ use crate::Element;
 /// to [`Selector::from`](Selector::from).
 #[derive(Debug)]
 pub struct Selector(Vec<CompoundSelector>);
-
-/// A sequence of simple selectors that are not separated by a
-/// combinator. A compound selector represents a set of
-/// simultaneous conditions on a single element.
-#[derive(Debug)]
-struct CompoundSelector(Vec<SimpleSelector>);
-
-/// A selector with a single component, such as a single
-/// id selector or type selector, that's not used in combination
-/// with or contains any other selector component or combinator.
-#[derive(Debug)]
-enum SimpleSelector {
-    Class(String),
-    Id(String),
-    Tag(String),
-}
 
 impl Selector {
     /// Check if the `element` matches the `selector`.
@@ -104,58 +91,5 @@ impl From<&str> for Selector {
                 .map(|s| CompoundSelector::from(s))
                 .collect(),
         )
-    }
-}
-
-enum SelectorMark {
-    Class,
-    Id,
-    Tag,
-}
-
-impl From<&str> for CompoundSelector {
-    fn from(selector: &str) -> Self {
-        let selector_chars = selector.trim().chars();
-        let mut chars_stack = Vec::<char>::new();
-        let mut selector_mark = SelectorMark::Tag;
-        let mut simple_selectors = vec![];
-
-        for ch in selector_chars {
-            match ch {
-                '#' => {
-                    if !chars_stack.is_empty() {
-                        let string = String::from_iter(chars_stack);
-                        chars_stack = Vec::new();
-                        match selector_mark {
-                            SelectorMark::Class => simple_selectors.push(SimpleSelector::Class(string)),
-                            SelectorMark::Id => simple_selectors.push(SimpleSelector::Id(string)),
-                            SelectorMark::Tag => simple_selectors.push(SimpleSelector::Tag(string)),
-                        }
-                    }
-                    
-                    selector_mark = SelectorMark::Id;
-                }
-                '.' => {
-                    if !chars_stack.is_empty() {
-                        let string = String::from_iter(chars_stack);
-                        chars_stack = Vec::new();
-                        match selector_mark {
-                            SelectorMark::Class => simple_selectors.push(SimpleSelector::Class(string)),
-                            SelectorMark::Id => simple_selectors.push(SimpleSelector::Id(string)),
-                            SelectorMark::Tag => simple_selectors.push(SimpleSelector::Tag(string)),
-                        }
-                    }
-                    selector_mark = SelectorMark::Class;
-                }
-                _ => chars_stack.push(ch),
-            }
-        }
-        let string = String::from_iter(chars_stack);
-        match selector_mark {
-            SelectorMark::Class => simple_selectors.push(SimpleSelector::Class(string)),
-            SelectorMark::Id => simple_selectors.push(SimpleSelector::Id(string)),
-            SelectorMark::Tag => simple_selectors.push(SimpleSelector::Tag(string)),
-        }
-        CompoundSelector(simple_selectors)
     }
 }
