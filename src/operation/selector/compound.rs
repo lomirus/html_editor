@@ -10,6 +10,7 @@ pub struct CompoundSelector(pub Vec<SimpleSelector>);
 
 impl From<&str> for CompoundSelector {
     fn from(selector: &str) -> Self {
+        let selector = selector.trim();
         let mut simple_selectors = vec![];
 
         let mut start = 0;
