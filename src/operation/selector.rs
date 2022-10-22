@@ -15,71 +15,6 @@ enum SelectorPos {
 }
 
 impl Selector {
-    /// The `selector` only supports type selector, ID selector and class selector.
-    ///
-    /// For example, `div#app`, `span` would be ok, but `.container > div`,
-    /// `#app *` would get unexpected results.
-    ///
-    /// ```
-    /// use html_editor::operation::Selector;
-    ///
-    /// // Ok: Simple tag, class and ID selectors.
-    /// let selector = Selector::from("span");
-    /// let selector = Selector::from(".class");
-    /// let selector = Selector::from("#id");
-    ///
-    /// // Ok: Mixed selector
-    /// let selector = Selector::from("div#app");
-    /// let selector = Selector::from("span.info#first");
-    ///
-    /// // Disallowed
-    /// let selector = Selector::from("div span");
-    /// let selector = Selector::from("a[target=_blank]");
-    /// ```
-    pub fn from(selector: &str) -> Self {
-        let selector_chars = selector.trim().chars();
-        let mut chars_stack = Vec::<char>::new();
-        let mut selector_pos = SelectorPos::Tag;
-        let mut selector = Selector {
-            class: String::new(),
-            id: String::new(),
-            tag: String::new(),
-        };
-
-        for ch in selector_chars {
-            match ch {
-                '#' => {
-                    let string = String::from_iter(chars_stack);
-                    chars_stack = Vec::new();
-                    match selector_pos {
-                        SelectorPos::Class => selector.class = string,
-                        SelectorPos::Id => selector.id = string,
-                        SelectorPos::Tag => selector.tag = string,
-                    }
-                    selector_pos = SelectorPos::Id;
-                }
-                '.' => {
-                    let string = String::from_iter(chars_stack);
-                    chars_stack = Vec::new();
-                    match selector_pos {
-                        SelectorPos::Class => selector.class = string,
-                        SelectorPos::Id => selector.id = string,
-                        SelectorPos::Tag => selector.tag = string,
-                    }
-                    selector_pos = SelectorPos::Class;
-                }
-                _ => chars_stack.push(ch),
-            }
-        }
-        let string = String::from_iter(chars_stack);
-        match selector_pos {
-            SelectorPos::Class => selector.class = string,
-            SelectorPos::Id => selector.id = string,
-            SelectorPos::Tag => selector.tag = string,
-        }
-        selector
-    }
-
     /// Check if the `element` matches the `selector`.
     ///
     /// ```
@@ -137,5 +72,72 @@ impl Selector {
         }
 
         matches
+    }
+}
+
+impl From<&str> for Selector {
+    /// The `selector` only supports type selector, ID selector and class selector.
+    ///
+    /// For example, `div#app`, `span` would be ok, but `.container > div`,
+    /// `#app *` would get unexpected results.
+    ///
+    /// ```
+    /// use html_editor::operation::Selector;
+    ///
+    /// // Ok: Simple tag, class and ID selectors.
+    /// let selector = Selector::from("span");
+    /// let selector = Selector::from(".class");
+    /// let selector = Selector::from("#id");
+    ///
+    /// // Ok: Mixed selector
+    /// let selector = Selector::from("div#app");
+    /// let selector = Selector::from("span.info#first");
+    ///
+    /// // Disallowed
+    /// let selector = Selector::from("div span");
+    /// let selector = Selector::from("a[target=_blank]");
+    /// ```
+    fn from(selector: &str) -> Self {
+        let selector_chars = selector.trim().chars();
+        let mut chars_stack = Vec::<char>::new();
+        let mut selector_pos = SelectorPos::Tag;
+        let mut selector = Selector {
+            class: String::new(),
+            id: String::new(),
+            tag: String::new(),
+        };
+
+        for ch in selector_chars {
+            match ch {
+                '#' => {
+                    let string = String::from_iter(chars_stack);
+                    chars_stack = Vec::new();
+                    match selector_pos {
+                        SelectorPos::Class => selector.class = string,
+                        SelectorPos::Id => selector.id = string,
+                        SelectorPos::Tag => selector.tag = string,
+                    }
+                    selector_pos = SelectorPos::Id;
+                }
+                '.' => {
+                    let string = String::from_iter(chars_stack);
+                    chars_stack = Vec::new();
+                    match selector_pos {
+                        SelectorPos::Class => selector.class = string,
+                        SelectorPos::Id => selector.id = string,
+                        SelectorPos::Tag => selector.tag = string,
+                    }
+                    selector_pos = SelectorPos::Class;
+                }
+                _ => chars_stack.push(ch),
+            }
+        }
+        let string = String::from_iter(chars_stack);
+        match selector_pos {
+            SelectorPos::Class => selector.class = string,
+            SelectorPos::Id => selector.id = string,
+            SelectorPos::Tag => selector.tag = string,
+        }
+        selector
     }
 }
