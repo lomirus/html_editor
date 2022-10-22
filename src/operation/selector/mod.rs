@@ -7,7 +7,7 @@ use self::{compound::CompoundSelector, simple::SimpleSelector};
 
 /// Basic selector. It follows the
 /// [CSS selector](https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Selectors)
-/// standard but not all rules are supported now. Please refer
+/// standard, but not all rules are supported now. Please refer
 /// to [`Selector::from`](Selector::from).
 #[derive(Debug)]
 pub struct Selector(Vec<CompoundSelector>);
@@ -63,26 +63,30 @@ impl Selector {
 }
 
 impl From<&str> for Selector {
-    /// The `selector` only supports type selector, ID selector and class selector.
-    ///
-    /// For example, `div#app`, `span` would be ok, but `.container > div`,
-    /// `#app *` would get unexpected results.
+    /// Generate a selector from given string, following the CSS
+    /// selector standard.
+    /// 
+    /// Not all rules are supported. Below shows the rules currently
+    /// supported: 
     ///
     /// ```
     /// use html_editor::operation::Selector;
     ///
-    /// // Ok: Simple tag, class and ID selectors.
-    /// let selector = Selector::from("span");
-    /// let selector = Selector::from(".class");
-    /// let selector = Selector::from("#id");
+    /// // Type Selector
+    /// Selector::from("span");
+    /// // Class selector
+    /// Selector::from(".class");
+    /// // ID selector
+    /// Selector::from("#id");
     ///
-    /// // Ok: Mixed selector
-    /// let selector = Selector::from("div#app");
-    /// let selector = Selector::from("span.info#first");
+    /// // Selector list
+    /// Selector::from("h1, h2");
+    /// // Compound selector
+    /// Selector::from("input.username");
     ///
-    /// // Disallowed
-    /// let selector = Selector::from("div span");
-    /// let selector = Selector::from("a[target=_blank]");
+    /// // Disallowed input that may cause unexpected result
+    /// Selector::from("div span");
+    /// Selector::from("a[target=_blank]");
     /// ```
     fn from(selector: &str) -> Self {
         Selector(selector.split(',').map(CompoundSelector::from).collect())

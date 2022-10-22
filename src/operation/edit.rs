@@ -1,7 +1,7 @@
 use super::Selector;
 use crate::{Element, Node};
 
-/// Insert or remove elements by [`Selector`], or trim the DOM.
+/// Insert and remove elements by [`Selector`], and trim the DOM.
 pub trait Editable {
     /// Remove all empty text nodes from `self`.
     ///
