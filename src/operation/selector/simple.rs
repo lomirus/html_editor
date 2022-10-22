@@ -7,9 +7,3 @@ pub enum SimpleSelector {
     Id(String),
     Tag(String),
 }
-
-pub enum SelectorMark {
-    Class,
-    Id,
-    Tag,
-}
