@@ -1,17 +1,28 @@
+use std::vec;
+
 use crate::Element;
 
-/// Simple query selector
+/// Basic selector. It follows the
+/// [CSS selector](https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Selectors)
+/// standard but not all rules are supported now. Please refer
+/// to [`Selector::from`](Selector::from).
 #[derive(Debug)]
-pub struct Selector {
-    class: String,
-    id: String,
-    tag: String,
-}
+pub struct Selector(Vec<CompoundSelector>);
 
-enum SelectorPos {
-    Class,
-    Id,
-    Tag,
+/// A sequence of simple selectors that are not separated by a
+/// combinator. A compound selector represents a set of
+/// simultaneous conditions on a single element.
+#[derive(Debug)]
+struct CompoundSelector(Vec<SimpleSelector>);
+
+/// A selector with a single component, such as a single
+/// id selector or type selector, that's not used in combination
+/// with or contains any other selector component or combinator.
+#[derive(Debug)]
+enum SimpleSelector {
+    Class(String),
+    Id(String),
+    Tag(String),
 }
 
 impl Selector {
@@ -32,46 +43,35 @@ impl Selector {
     /// assert_eq!(selector.matches(&element), true);
     /// ```
     pub fn matches(&self, element: &Element) -> bool {
-        let mut matches = true;
+        let element_classes = element
+            .attrs
+            .iter()
+            .find(|(key, _)| key == "class")
+            .and_then(|(_, v)| Some(v.split(' ').map(|name| name.trim()).collect::<Vec<_>>()));
+        let element_id = element
+            .attrs
+            .iter()
+            .find(|(key, _)| key == "id")
+            .and_then(|(_, v)| Some(v));
 
-        if !self.tag.is_empty() && element.name != self.tag {
-            matches = false;
-        }
-
-        if !self.class.is_empty() {
-            let element_class = element.attrs.iter().find(|(key, _)| key == "class");
-            match element_class {
-                Some(class) => {
-                    let class = &class.1;
-                    if !class
-                        .split(' ')
-                        .map(|name| name.trim().to_string())
-                        .any(|x| x == self.class)
-                    {
-                        matches = false;
-                    }
-                }
-                None => matches = false,
-            }
-        }
-
-        if !self.id.is_empty() {
-            let element_id = element.attrs.iter().find(|(key, _)| key == "id");
-            match element_id {
-                Some(id) => {
-                    if self.id != id.1 {
-                        matches = false;
-                    }
-                }
-                None => {
-                    if !self.id.is_empty() {
-                        matches = false;
-                    }
-                }
-            }
-        }
-
-        matches
+        self.0.iter().any(|compound_selector| {
+            compound_selector
+                .0
+                .iter()
+                .all(|simple_selector| match simple_selector {
+                    SimpleSelector::Class(selector_class) => match &element_classes {
+                        Some(element_classes) => element_classes
+                            .iter()
+                            .any(|element_class| element_class == selector_class),
+                        None => false,
+                    },
+                    SimpleSelector::Id(selector_id) => match element_id {
+                        Some(element_id) => element_id == selector_id,
+                        None => false,
+                    },
+                    SimpleSelector::Tag(tag) => tag == &element.name,
+                })
+        })
     }
 }
 
@@ -98,46 +98,64 @@ impl From<&str> for Selector {
     /// let selector = Selector::from("a[target=_blank]");
     /// ```
     fn from(selector: &str) -> Self {
+        Selector(
+            selector
+                .split(',')
+                .map(|s| CompoundSelector::from(s))
+                .collect(),
+        )
+    }
+}
+
+enum SelectorMark {
+    Class,
+    Id,
+    Tag,
+}
+
+impl From<&str> for CompoundSelector {
+    fn from(selector: &str) -> Self {
         let selector_chars = selector.trim().chars();
         let mut chars_stack = Vec::<char>::new();
-        let mut selector_pos = SelectorPos::Tag;
-        let mut selector = Selector {
-            class: String::new(),
-            id: String::new(),
-            tag: String::new(),
-        };
+        let mut selector_mark = SelectorMark::Tag;
+        let mut simple_selectors = vec![];
 
         for ch in selector_chars {
             match ch {
                 '#' => {
-                    let string = String::from_iter(chars_stack);
-                    chars_stack = Vec::new();
-                    match selector_pos {
-                        SelectorPos::Class => selector.class = string,
-                        SelectorPos::Id => selector.id = string,
-                        SelectorPos::Tag => selector.tag = string,
+                    if !chars_stack.is_empty() {
+                        let string = String::from_iter(chars_stack);
+                        chars_stack = Vec::new();
+                        match selector_mark {
+                            SelectorMark::Class => simple_selectors.push(SimpleSelector::Class(string)),
+                            SelectorMark::Id => simple_selectors.push(SimpleSelector::Id(string)),
+                            SelectorMark::Tag => simple_selectors.push(SimpleSelector::Tag(string)),
+                        }
                     }
-                    selector_pos = SelectorPos::Id;
+                    
+                    selector_mark = SelectorMark::Id;
                 }
                 '.' => {
-                    let string = String::from_iter(chars_stack);
-                    chars_stack = Vec::new();
-                    match selector_pos {
-                        SelectorPos::Class => selector.class = string,
-                        SelectorPos::Id => selector.id = string,
-                        SelectorPos::Tag => selector.tag = string,
+                    if !chars_stack.is_empty() {
+                        let string = String::from_iter(chars_stack);
+                        chars_stack = Vec::new();
+                        match selector_mark {
+                            SelectorMark::Class => simple_selectors.push(SimpleSelector::Class(string)),
+                            SelectorMark::Id => simple_selectors.push(SimpleSelector::Id(string)),
+                            SelectorMark::Tag => simple_selectors.push(SimpleSelector::Tag(string)),
+                        }
                     }
-                    selector_pos = SelectorPos::Class;
+                    selector_mark = SelectorMark::Class;
                 }
                 _ => chars_stack.push(ch),
             }
         }
         let string = String::from_iter(chars_stack);
-        match selector_pos {
-            SelectorPos::Class => selector.class = string,
-            SelectorPos::Id => selector.id = string,
-            SelectorPos::Tag => selector.tag = string,
+        match selector_mark {
+            SelectorMark::Class => simple_selectors.push(SimpleSelector::Class(string)),
+            SelectorMark::Id => simple_selectors.push(SimpleSelector::Id(string)),
+            SelectorMark::Tag => simple_selectors.push(SimpleSelector::Tag(string)),
         }
-        selector
+        CompoundSelector(simple_selectors)
     }
 }
