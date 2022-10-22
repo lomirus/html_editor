@@ -11,38 +11,33 @@ const HTML: &str = r#"
 #[test]
 fn nodes_query() {
     let nodes = parse(HTML).unwrap();
-    let element = nodes.query(&Selector::from("span")).unwrap();
-    println!("{:?}", element);
+    let _element = nodes.query(&Selector::from("span")).unwrap();
 }
 
 #[test]
 fn nodes_query_all() {
     let nodes = parse(HTML).unwrap();
-    let elements = nodes.query_all(&Selector::from("span"));
-    println!("{:?}", elements);
+    let _elements = nodes.query_all(&Selector::from("span"));
 }
 
 #[test]
 fn element_query() {
     let nodes = parse(HTML).unwrap();
     let node = nodes.into_iter().nth(1).unwrap();
-    let element = node.into_element().query(&Selector::from("span")).unwrap();
-    println!("{:?}", element);
+    let _element = node.into_element().query(&Selector::from("span")).unwrap();
 }
 
 #[test]
 fn element_query_all() {
     let nodes = parse(HTML).unwrap();
     let node = nodes.into_iter().nth(1).unwrap();
-    let elements = node.into_element().query_all(&Selector::from("span"));
-    println!("{:?}", elements);
+    let _elements = node.into_element().query_all(&Selector::from("span"));
 }
 
 #[test]
 fn class_query() {
     let nodes = parse(HTML).unwrap();
-    let element = nodes.query(&Selector::from(".last")).unwrap();
-    println!("{:?}", element);
+    let _element = nodes.query(&Selector::from(".last")).unwrap();
 }
 
 #[test]

@@ -3,45 +3,31 @@ use html_editor::{parse, try_parse};
 
 #[test]
 fn paired_tag() {
-    let a = parse("<p></p>");
-    let b = parse("<div>Hello, world!</div>");
-
-    println!("{:#?}", a);
-    println!("{:#?}", b);
+    parse("<p></p>").unwrap();
+    parse("<div>Hello, world!</div>").unwrap();
 }
 
 #[test]
 fn void_tag() {
-    let a = parse("<div />");
-    let b = parse("<div/>");
-
-    println!("{:#?}", a);
-    println!("{:#?}", b);
+    parse("<div />").unwrap();
+    parse("<div/>").unwrap();
 }
 
 #[test]
 fn self_closing_tag() {
-    let a = parse("<img>");
-
-    println!("{:#?}", a);
+    parse("<img>").unwrap();
 }
 
 #[test]
 fn comment_tag() {
-    let a = parse("<!-- comment -->");
-    let b = parse("<!--comment-->");
-
-    println!("{:#?}", a);
-    println!("{:#?}", b);
+    parse("<!-- comment -->").unwrap();
+    parse("<!--comment-->").unwrap();
 }
 
 #[test]
 fn attributes() {
-    let a = parse("<img src=\"example.png\" alt=example>");
-    let b = parse("<input disabled type=\"button\">");
-
-    println!("{:#?}", a);
-    println!("{:#?}", b);
+    parse("<img src=\"example.png\" alt=example>").unwrap();
+    parse("<input disabled type=\"button\">").unwrap();
 }
 
 #[test]
@@ -103,8 +89,6 @@ fn complex() {
     )
     .unwrap();
     dom.trim();
-
-    println!("{:#?}", dom);
 }
 
 #[test]
@@ -134,6 +118,4 @@ fn xml() {
     )
     .unwrap();
     html.trim();
-
-    println!("{:#?}", html);
 }
