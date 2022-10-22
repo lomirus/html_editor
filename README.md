@@ -1,4 +1,5 @@
 [![crate-badge]][crate-link]
+[![downloads-badge]][crate-link]
 ![License](https://img.shields.io/crates/l/html_editor)
 [![check-badge]][check-link]
 
@@ -6,6 +7,7 @@
 [crate-link]: https://crates.io/crates/html_editor
 [check-badge]: https://github.com/lomirus/html-editor/workflows/check/badge.svg
 [check-link]: https://github.com/lomirus/html-editor/actions/workflows/check.yaml
+[downloads-badge]: https://img.shields.io/crates/d/html_editor
 
 # HTML Editor
 
