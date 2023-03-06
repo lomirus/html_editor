@@ -58,9 +58,10 @@ let document: Vec<Node> = try_parse("<div><span>Ipsum</div>");
 
 ```rust
 // let html = r#"..."#
-let nodes = parse(html)?;
+let nodes: Vec<Node> = parse(html)?;
 let selector: Selector = Selector::from(".box");
-let element: Element = nodes.query(&selector).unwrap();
+
+let element: Option<Element> = nodes.query(&selector);
 let elements: Vec<Element> = nodes.query_all(&selector);
 ```
 
