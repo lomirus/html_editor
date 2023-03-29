@@ -112,11 +112,6 @@ fn nodes_execute_for_internal(
 ) {
     for node in nodes {
         if let Some(element) = node.as_element_mut() {
-            // Check if this element matches. If so, execute the function on it
-            if selector.matches(&element) {
-                f(element);
-            }
-
             // Recursively traverse the descendants nodes
             element_execute_for_internal(element, selector, f);
         }
