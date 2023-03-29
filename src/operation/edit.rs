@@ -42,7 +42,6 @@ pub trait Editable {
     /// ```
     fn insert_to(&mut self, selector: &Selector, target: Node) -> &mut Self;
 
-    #[rustfmt::skip]
     /// Remove all elements that matches the `selector`.
     ///
     /// ```
@@ -53,7 +52,7 @@ pub trait Editable {
     /// <div>
     ///     <div class="recommend"></div>
     ///     <div class="results"></div>
-    ///     <div class="ad"></div><p></p>
+    ///     <span>foo</span>    <div class="ad"></div>    <span>bar</span>
     /// </div>"#;
     ///
     /// let selector = Selector::from(".ad");
@@ -62,7 +61,7 @@ pub trait Editable {
     /// <div>
     ///     <div class="recommend"></div>
     ///     <div class="results"></div>
-    ///     <p></p>
+    ///     <span>foo</span>        <span>bar</span>
     /// </div>"#)
     /// ```
     fn remove_by(&mut self, selector: &Selector) -> &mut Self;
