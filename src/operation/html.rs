@@ -66,7 +66,7 @@ impl Htmlifiable for Element {
 impl Htmlifiable for Node {
     fn html(&self) -> String {
         match self {
-            Node::Element { .. } => self.clone().into_element().html(),
+            Node::Element(element) => element.html(),
             Node::Text(text) => text.to_string(),
             Node::Comment(comment) => format!("<!--{}-->", comment),
             Node::Doctype(doctype) => match &doctype {

@@ -9,7 +9,7 @@
 mod attrs;
 mod token;
 
-use crate::{data::VOID_TAGS, Node};
+use crate::{data::VOID_TAGS, Element, Node};
 use token::Token;
 
 fn html_to_stack(html: &str) -> Result<Vec<Token>, String> {
@@ -135,11 +135,14 @@ fn stack_to_dom(token_stack: Vec<Token>) -> Result<Vec<Node>, String> {
                 let is_void_tag = VOID_TAGS.contains(&tag.as_str());
                 if start_tags_stack.is_empty() {
                     if is_void_tag {
-                        nodes.push(Node::Element {
-                            name: tag.clone(),
-                            attrs: attrs.clone(),
-                            children: Vec::new(),
-                        });
+                        nodes.push(
+                            Element {
+                                name: tag.clone(),
+                                attrs: attrs.clone(),
+                                children: Vec::new(),
+                            }
+                            .into_node(),
+                        );
                     } else {
                         start_tag_index = i;
                         start_tags_stack.push(Token::Start(tag.clone(), attrs.clone()));
@@ -155,7 +158,7 @@ fn stack_to_dom(token_stack: Vec<Token>) -> Result<Vec<Node>, String> {
             }
             Token::End(tag) => {
                 let start_tag = match start_tags_stack.pop() {
-                    Some(token) => token.into_node().into_element(),
+                    Some(token) => token.into_element(),
                     None => return Err(format!("No start tag matches </{}>", tag)),
                 };
                 if tag != &start_tag.name {
@@ -165,11 +168,14 @@ fn stack_to_dom(token_stack: Vec<Token>) -> Result<Vec<Node>, String> {
                     ));
                 }
                 if start_tags_stack.is_empty() {
-                    nodes.push(Node::Element {
-                        name: start_tag.name,
-                        attrs: start_tag.attrs,
-                        children: stack_to_dom(token_stack[start_tag_index + 1..i].to_vec())?,
-                    })
+                    nodes.push(
+                        Element {
+                            name: start_tag.name,
+                            attrs: start_tag.attrs,
+                            children: stack_to_dom(token_stack[start_tag_index + 1..i].to_vec())?,
+                        }
+                        .into_node(),
+                    )
                 }
             }
             _ => {
@@ -182,7 +188,7 @@ fn stack_to_dom(token_stack: Vec<Token>) -> Result<Vec<Node>, String> {
 
     match start_tags_stack.pop() {
         Some(token) => {
-            let start_tag_name = token.into_node().into_element().name;
+            let start_tag_name = token.into_element().name;
             Err(format!("<{}> is not closed", start_tag_name))
         }
         None => Ok(nodes),
@@ -200,11 +206,14 @@ fn try_stack_to_dom(token_stack: Vec<Token>) -> Vec<Node> {
                 let is_void_tag = VOID_TAGS.contains(&tag.as_str());
                 if start_tags_stack.is_empty() {
                     if is_void_tag {
-                        nodes.push(Node::Element {
-                            name: tag.clone(),
-                            attrs: attrs.clone(),
-                            children: Vec::new(),
-                        });
+                        nodes.push(
+                            Element {
+                                name: tag.clone(),
+                                attrs: attrs.clone(),
+                                children: Vec::new(),
+                            }
+                            .into_node(),
+                        );
                     } else {
                         start_tag_index = i;
                         start_tags_stack.push(Token::Start(tag.clone(), attrs.clone()));
@@ -220,7 +229,7 @@ fn try_stack_to_dom(token_stack: Vec<Token>) -> Vec<Node> {
             }
             Token::End(tag) => {
                 let start_tag = match start_tags_stack.pop() {
-                    Some(token) => token.into_node().into_element(),
+                    Some(token) => token.into_element(),
                     // It means the end tag is redundant, so we will omit
                     // it and just start the next loop.
                     None => continue,
@@ -235,11 +244,16 @@ fn try_stack_to_dom(token_stack: Vec<Token>) -> Vec<Node> {
                 }
 
                 if start_tags_stack.is_empty() {
-                    nodes.push(Node::Element {
-                        name: start_tag.name,
-                        attrs: start_tag.attrs,
-                        children: try_stack_to_dom(token_stack[start_tag_index + 1..i].to_vec()),
-                    })
+                    nodes.push(
+                        Element {
+                            name: start_tag.name,
+                            attrs: start_tag.attrs,
+                            children: try_stack_to_dom(
+                                token_stack[start_tag_index + 1..i].to_vec(),
+                            ),
+                        }
+                        .into_node(),
+                    )
                 }
             }
             _ => {
@@ -252,11 +266,12 @@ fn try_stack_to_dom(token_stack: Vec<Token>) -> Vec<Node> {
 
     while let Some(token) = start_tags_stack.pop() {
         let node = match token {
-            Token::Start(name, attrs) => Node::Element {
+            Token::Start(name, attrs) => Element {
                 name,
                 attrs,
                 children: try_stack_to_dom(token_stack[start_tag_index + 1..].to_vec()),
-            },
+            }
+            .into_node(),
             _ => unreachable!(),
         };
         nodes = vec![node];

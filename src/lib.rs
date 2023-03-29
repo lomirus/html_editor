@@ -51,11 +51,7 @@ pub enum Doctype {
 /// Node of DOM
 #[derive(Debug, Clone)]
 pub enum Node {
-    Element {
-        name: String,
-        attrs: Vec<(String, String)>,
-        children: Vec<Node>,
-    },
+    Element(Element),
     Text(String),
     Comment(String),
     Doctype(Doctype),
@@ -74,34 +70,53 @@ impl Node {
         matches!(self, Node::Element { .. })
     }
 
+    #[deprecated(note = "Please use `is_element` instead")]
+    pub fn into_element(self) -> Element {
+        match self {
+            Node::Element(element) => element,
+            _ => panic!("{:?} is not an element", self),
+        }
+    }
+
     /// Convert the node into an element.
     ///
-    /// Warning: The program will panic if it fails to convert.
-    /// So take care to use this method unless you are sure.
+    /// Returns `None` if the node is not an element.
     ///
     /// Example:
     /// ```
     /// use html_editor::{Node, Element};
     ///
     /// let a: Node = Node::new_element("div", vec![("id", "app")], vec![]);
-    /// let a: Element = a.into_element();
+    /// assert!(a.as_element().is_some());
     ///
     /// let b: Node = Node::Text("hello".to_string());
-    /// // The next line will panic at 'Text("hello") is not an element'
-    /// // let b: Element = a.into_element();
+    /// assert!(b.as_element().is_none());
     /// ```
-    pub fn into_element(self) -> Element {
+    pub fn as_element(&self) -> Option<&Element> {
         match self {
-            Node::Element {
-                name,
-                attrs,
-                children,
-            } => Element {
-                name,
-                attrs,
-                children,
-            },
-            _ => panic!("{:?} is not an element", self),
+            Node::Element(element) => Some(element),
+            _ => None,
+        }
+    }
+
+    /// Convert the node into a mutable element.
+    ///
+    /// Returns `None` if the node is not an element.
+    ///
+    /// Example:
+    /// ```
+    /// use html_editor::{Node, Element};
+    ///
+    /// let a: Node = Node::new_element("div", vec![("id", "app")], vec![]);
+    /// assert!(a.as_element().is_some());
+    ///
+    /// let b: Node = Node::Text("hello".to_string());
+    /// assert!(b.as_element().is_none());
+    /// ```
+    pub fn as_element_mut(&mut self) -> Option<&mut Element> {
+        match self {
+            Node::Element(element) => Some(element),
+            _ => None,
         }
     }
 
@@ -119,7 +134,7 @@ impl Node {
     /// );
     /// ```
     pub fn new_element(name: &str, attrs: Vec<(&str, &str)>, children: Vec<Node>) -> Node {
-        Node::Element {
+        Element {
             name: name.to_string(),
             attrs: attrs
                 .into_iter()
@@ -127,11 +142,12 @@ impl Node {
                 .collect(),
             children,
         }
+        .into_node()
     }
 }
 
 /// HTML Element
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct Element {
     pub name: String,
     pub attrs: Vec<(String, String)>,
@@ -149,5 +165,17 @@ impl Element {
                 .collect(),
             children,
         }
+    }
+}
+
+impl Element {
+    pub fn into_node(self) -> Node {
+        Node::Element(self)
+    }
+}
+
+impl From<Element> for Node {
+    fn from(element: Element) -> Self {
+        Node::Element(element)
     }
 }

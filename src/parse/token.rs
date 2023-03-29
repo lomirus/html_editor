@@ -1,5 +1,5 @@
 use crate::parse::attrs;
-use crate::{Doctype, Node};
+use crate::{Doctype, Element, Node};
 
 #[derive(Debug, Clone)]
 pub enum Token {
@@ -89,24 +89,51 @@ impl Token {
 
     pub fn into_node(self) -> Node {
         match self {
-            Self::Start(name, attrs) => Node::Element {
+            Self::Start(name, attrs) => Element {
+                name,
+                attrs,
+                children: Vec::new(),
+            }
+            .into_node(),
+
+            Self::End(name) => Element {
+                name,
+                attrs: Vec::new(),
+                children: Vec::new(),
+            }
+            .into_node(),
+
+            Self::Closing(name, attrs) => Element {
+                name,
+                attrs,
+                children: Vec::new(),
+            }
+            .into_node(),
+
+            Self::Doctype(doctype) => Node::Doctype(doctype),
+            Self::Comment(comment) => Node::Comment(comment),
+            Self::Text(text) => Node::Text(text),
+        }
+    }
+
+    pub fn into_element(self) -> Element {
+        match self {
+            Self::Start(name, attrs) => Element {
                 name,
                 attrs,
                 children: Vec::new(),
             },
-            Self::End(name) => Node::Element {
+            Self::End(name) => Element {
                 name,
                 attrs: Vec::new(),
                 children: Vec::new(),
             },
-            Self::Closing(name, attrs) => Node::Element {
+            Self::Closing(name, attrs) => Element {
                 name,
                 attrs,
                 children: Vec::new(),
             },
-            Self::Doctype(doctype) => Node::Doctype(doctype),
-            Self::Comment(comment) => Node::Comment(comment),
-            Self::Text(text) => Node::Text(text),
+            _ => panic!("Cannot convert token to element"),
         }
     }
 }

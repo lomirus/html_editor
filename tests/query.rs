@@ -24,14 +24,21 @@ fn nodes_query_all() {
 fn element_query() {
     let nodes = parse(HTML).unwrap();
     let node = nodes.into_iter().nth(1).unwrap();
-    let _element = node.into_element().query(&Selector::from("span")).unwrap();
+    let _element = node
+        .as_element()
+        .unwrap()
+        .query(&Selector::from("span"))
+        .unwrap();
 }
 
 #[test]
 fn element_query_all() {
     let nodes = parse(HTML).unwrap();
     let node = nodes.into_iter().nth(1).unwrap();
-    let _elements = node.into_element().query_all(&Selector::from("span"));
+    let _elements = node
+        .as_element()
+        .unwrap()
+        .query_all(&Selector::from("span"));
 }
 
 #[test]
