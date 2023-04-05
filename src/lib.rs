@@ -108,10 +108,10 @@ impl Node {
     /// use html_editor::{Node, Element};
     ///
     /// let a: Node = Node::new_element("div", vec![("id", "app")], vec![]);
-    /// assert!(a.as_element().is_some());
+    /// assert!(a.as_element_mut().is_some());
     ///
     /// let b: Node = Node::Text("hello".to_string());
-    /// assert!(b.as_element().is_none());
+    /// assert!(b.as_element_mut().is_none());
     /// ```
     pub fn as_element_mut(&mut self) -> Option<&mut Element> {
         match self {
