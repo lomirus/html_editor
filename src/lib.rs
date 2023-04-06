@@ -107,10 +107,10 @@ impl Node {
     /// ```
     /// use html_editor::{Node, Element};
     ///
-    /// let a: Node = Node::new_element("div", vec![("id", "app")], vec![]);
+    /// let mut a: Node = Node::new_element("div", vec![("id", "app")], vec![]);
     /// assert!(a.as_element_mut().is_some());
     ///
-    /// let b: Node = Node::Text("hello".to_string());
+    /// let mut b: Node = Node::Text("hello".to_string());
     /// assert!(b.as_element_mut().is_none());
     /// ```
     pub fn as_element_mut(&mut self) -> Option<&mut Element> {

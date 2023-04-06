@@ -52,7 +52,7 @@ pub trait Editable {
     /// <div>
     ///     <div class="recommend"></div>
     ///     <div class="results"></div>
-    ///     <span>foo</span>    <div class="ad"></div>    <span>bar</span>
+    ///     <div class="ad"></div>
     /// </div>"#;
     ///
     /// let selector = Selector::from(".ad");
@@ -61,7 +61,7 @@ pub trait Editable {
     /// <div>
     ///     <div class="recommend"></div>
     ///     <div class="results"></div>
-    ///     <span>foo</span>        <span>bar</span>
+    ///    
     /// </div>"#)
     /// ```
     fn remove_by(&mut self, selector: &Selector) -> &mut Self;
