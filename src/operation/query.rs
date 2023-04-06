@@ -124,7 +124,7 @@ fn element_execute_for_internal(
     selector: &Selector,
     f: &mut impl FnMut(&mut Element),
 ) {
-    if selector.matches(&element) {
+    if selector.matches(element) {
         f(element);
     }
     nodes_execute_for_internal(&mut element.children, selector, f);
@@ -172,7 +172,7 @@ impl Queryable for Vec<Node> {
 
 impl Queryable for Element {
     fn query(&self, selector: &Selector) -> Option<&Element> {
-        if selector.matches(&self) {
+        if selector.matches(self) {
             Some(self)
         } else {
             self.children.query(selector)
@@ -181,14 +181,14 @@ impl Queryable for Element {
 
     fn query_all(&self, selector: &Selector) -> Vec<&Element> {
         let mut elements = self.children.query_all(selector);
-        if selector.matches(&self) {
+        if selector.matches(self) {
             elements.push(self);
         }
         elements
     }
 
     fn query_mut(&mut self, selector: &Selector) -> Option<&mut Element> {
-        if selector.matches(&self) {
+        if selector.matches(self) {
             Some(self)
         } else {
             self.children.query_mut(selector)
