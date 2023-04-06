@@ -35,7 +35,7 @@ fn html_to_stack(html: &str) -> Result<Vec<Token>, String> {
         } else if in_comment {
             chars_stack.push(ch);
 
-            if String::from_iter(&chars_stack).ends_with("-->") {
+            if ends_with(&chars_stack, &['-', '-', '>']) {
                 let comment = String::from_iter(chars_stack);
                 chars_stack = Vec::new();
                 token_stack.push(Token::from_comment(comment));
@@ -46,7 +46,7 @@ fn html_to_stack(html: &str) -> Result<Vec<Token>, String> {
             chars_stack.push(ch);
             let len = chars_stack.len();
 
-            if String::from_iter(&chars_stack).ends_with("</script>") {
+            if ends_with(&chars_stack, &['<', '/', 's', 'c', 'r', 'i', 'p', 't', '>']) {
                 let script = String::from_iter(chars_stack[..len - 9].to_vec());
                 chars_stack = Vec::new();
                 token_stack.push(Token::Text(script));
@@ -57,7 +57,7 @@ fn html_to_stack(html: &str) -> Result<Vec<Token>, String> {
             chars_stack.push(ch);
             let len = chars_stack.len();
 
-            if String::from_iter(&chars_stack).ends_with("</style>") {
+            if ends_with(&chars_stack, &['<', '/', 's', 't', 'y', 'l', 'e', '>']) {
                 let style = String::from_iter(chars_stack[..len - 8].to_vec());
                 chars_stack = Vec::new();
                 token_stack.push(Token::Text(style));
@@ -101,7 +101,7 @@ fn html_to_stack(html: &str) -> Result<Vec<Token>, String> {
                 }
                 '-' => {
                     chars_stack.push(ch);
-                    if String::from_iter(&chars_stack) == "<!--" {
+                    if chars_stack == ['<', '!', '-', '-'] {
                         in_comment = true;
                     }
                 }
@@ -316,7 +316,6 @@ fn try_stack_to_dom(token_stack: Vec<Token>) -> Vec<Node> {
 /// ```
 pub fn parse(html: &str) -> Result<Vec<Node>, String> {
     let stack = html_to_stack(html)?;
-    // println!("{:#?}", stack);
 
     stack_to_dom(stack)
 }
@@ -339,7 +338,18 @@ pub fn parse(html: &str) -> Result<Vec<Node>, String> {
 /// ```
 pub fn try_parse(html: &str) -> Vec<Node> {
     let stack = html_to_stack(html).unwrap_or_default();
-    // println!("{:?}", stack);
 
     try_stack_to_dom(stack)
+}
+
+// Use `&[char]` instead of `&str` to improve performance.
+fn ends_with(chars: &Vec<char>, end: &[char]) -> bool {
+    let chars_len = chars.len();
+    let end_len = end.len();
+    for i in 1..(end_len + 1) {
+        if chars[chars_len - i] != end[end.len() - i] {
+            return false;
+        }
+    }
+    true
 }
