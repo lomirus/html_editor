@@ -76,8 +76,8 @@ impl Editable for Vec<Node> {
             Node::Element { .. } => true,
         });
         for node in self.iter_mut() {
-            if let Node::Element { children, .. } = node {
-                children.trim();
+            if let Node::Element(el) = node {
+                el.children.trim();
             }
         }
         self
@@ -85,19 +85,14 @@ impl Editable for Vec<Node> {
 
     fn insert_to(&mut self, selector: &Selector, target: Node) -> &mut Self {
         for node in self.iter_mut() {
-            if let Node::Element {
-                name,
-                attrs,
-                children,
-            } = node
-            {
-                children.insert_to(selector, target.clone());
+            if let Node::Element(el) = node {
+                el.children.insert_to(selector, target.clone());
                 if selector.matches(&Element {
-                    name: name.clone(),
-                    attrs: attrs.clone(),
+                    name: el.name.clone(),
+                    attrs: el.attrs.clone(),
                     children: vec![],
                 }) {
-                    children.push(target.clone());
+                    el.children.push(target.clone());
                 }
             }
         }
@@ -106,10 +101,10 @@ impl Editable for Vec<Node> {
 
     fn remove_by(&mut self, selector: &Selector) -> &mut Self {
         self.retain(|node| {
-            if let Node::Element { name, attrs, .. } = node {
+            if let Node::Element(el) = node {
                 let element = Element {
-                    name: name.clone(),
-                    attrs: attrs.clone(),
+                    name: el.name.clone(),
+                    attrs: el.attrs.clone(),
                     children: vec![],
                 };
                 return !selector.matches(&element);
@@ -117,8 +112,8 @@ impl Editable for Vec<Node> {
             true
         });
         for node in self.iter_mut() {
-            if let Node::Element { children, .. } = node {
-                children.remove_by(selector);
+            if let Node::Element(el) = node {
+                el.remove_by(selector);
             }
         }
         self
