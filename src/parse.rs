@@ -6,27 +6,71 @@
 //
 // If you have any idea, feel free to post an issue.
 
+/// Represents the offset in the source file provided to the [parse] function.
+/// The number represents a number of *characters* into the source string.
+#[derive(Debug, Clone, Copy, PartialEq)]
+pub struct SourceLocation(pub usize);
+
+impl std::ops::Add<isize> for SourceLocation {
+    type Output = Self;
+
+    fn add(self, rhs: isize) -> Self::Output {
+        SourceLocation(self.0.checked_add_signed(rhs).expect("SourceLocation out of bounds"))
+    }
+}
+
+impl std::ops::Sub<isize> for SourceLocation {
+    type Output = Self;
+
+    fn sub(self, rhs: isize) -> Self::Output {
+        SourceLocation(self.0.checked_add_signed(-rhs).expect("SourceLocation out of bounds"))
+    }
+}
+
 mod attrs;
 mod token;
 
 use crate::{data::VOID_TAGS, Element, Node};
 use token::Token;
 
-fn html_to_stack(html: &str) -> Result<Vec<Token>, String> {
+#[derive(Debug, Clone, PartialEq)]
+pub struct HTMLParseError {
+    pub source_location: SourceLocation,
+    pub inner: InnerHTMLParseError,
+}
+
+#[derive(Debug, Clone, PartialEq)]
+pub enum InnerHTMLParseError {
+    MismatchedTags { start_tag: String, start_location: SourceLocation, end_tag: String },
+    UnopenedTag { tag: String },
+    UnclosedTag { tag: String },
+    InvalidTag { tag: String, reason: &'static str },
+}
+
+impl InnerHTMLParseError {
+    fn with_location(self, source_location: SourceLocation) -> HTMLParseError {
+        HTMLParseError { source_location, inner: self }
+    }
+}
+
+fn html_to_stack(html: &str) -> Result<Vec<(Token, SourceLocation)>, HTMLParseError> {
     let mut chars_stack = Vec::<char>::new();
-    let mut token_stack = Vec::<Token>::new();
+    let mut token_stack = Vec::<(Token, SourceLocation)>::new();
     let mut in_quotes: Option<char> = None;
     // More precisely: is in angle brackets
     let mut in_brackets = false;
     let mut in_comment = false;
     let mut in_script = false;
     let mut in_style = false;
-    for ch in html.chars() {
+    for (i, ch) in html.chars().enumerate() {
+        let loc = SourceLocation(i);
+        let next_loc = loc + 1;
+
         if let Some(quote) = in_quotes {
             if ch == quote {
                 let previous_char = *chars_stack
                     .last()
-                    .expect("cannot get the last char in chars stack");
+                    .expect("cannot get the last char in chars stack"); // This should be unreachable as in_quotes should not be enterable without any chars in the stack
                 if previous_char != '\\' {
                     in_quotes = None;
                 }
@@ -36,9 +80,11 @@ fn html_to_stack(html: &str) -> Result<Vec<Token>, String> {
             chars_stack.push(ch);
 
             if ends_with(&chars_stack, &['-', '-', '>']) {
+                let comment_len = chars_stack.len();
                 let comment = String::from_iter(chars_stack);
                 chars_stack = Vec::new();
-                token_stack.push(Token::from_comment(comment));
+                let start_loc = next_loc - comment_len as isize;
+                token_stack.push((Token::from_comment(comment), start_loc));
                 in_comment = false;
                 in_brackets = false;
             }
@@ -47,10 +93,13 @@ fn html_to_stack(html: &str) -> Result<Vec<Token>, String> {
             let len = chars_stack.len();
 
             if ends_with(&chars_stack, &['<', '/', 's', 'c', 'r', 'i', 'p', 't', '>']) {
+                let script_len = chars_stack.len() - 9;
                 let script = String::from_iter(chars_stack[..len - 9].to_vec());
                 chars_stack = Vec::new();
-                token_stack.push(Token::Text(script));
-                token_stack.push(Token::End("script".to_string()));
+                let script_start_loc = next_loc - 9 - script_len as isize;
+                let script_end_tag_start_loc = next_loc - 9;
+                token_stack.push((Token::Text(script), script_start_loc));
+                token_stack.push((Token::End("script".to_string()), script_end_tag_start_loc));
                 in_script = false;
             }
         } else if in_style {
@@ -58,10 +107,13 @@ fn html_to_stack(html: &str) -> Result<Vec<Token>, String> {
             let len = chars_stack.len();
 
             if ends_with(&chars_stack, &['<', '/', 's', 't', 'y', 'l', 'e', '>']) {
+                let style_len = chars_stack.len() - 8;
                 let style = String::from_iter(chars_stack[..len - 8].to_vec());
                 chars_stack = Vec::new();
-                token_stack.push(Token::Text(style));
-                token_stack.push(Token::End("style".to_string()));
+                let style_start_loc = next_loc - 8 - style_len as isize;
+                let style_end_tag_start_loc = next_loc - 8;
+                token_stack.push((Token::Text(style), style_start_loc));
+                token_stack.push((Token::End("style".to_string()), style_end_tag_start_loc));
                 in_style = false;
             }
         } else {
@@ -72,10 +124,12 @@ fn html_to_stack(html: &str) -> Result<Vec<Token>, String> {
                     if !chars_stack.is_empty() {
                         // Turn the chars in `chars_stack` into `String`
                         // and clean the chars stack.
+                        let txt_len = chars_stack.len();
                         let txt_text = String::from_iter(chars_stack);
                         chars_stack = Vec::new();
+                        let text_start_loc = next_loc - txt_len as isize;
                         // Push the text we just got to the token stack.
-                        token_stack.push(Token::Text(txt_text));
+                        token_stack.push((Token::Text(txt_text), text_start_loc));
                     }
                     chars_stack.push(ch);
                 }
@@ -84,11 +138,13 @@ fn html_to_stack(html: &str) -> Result<Vec<Token>, String> {
                     chars_stack.push(ch);
                     // Turn the chars in `chars_stack` in to `String`
                     // and clean the chars stack.
+                    let tag_text_len = chars_stack.len();
                     let tag_text = String::from_iter(chars_stack);
                     chars_stack = Vec::new();
                     // Push the tag with the text we just got to the token stack.
-                    let tag = Token::from(tag_text.clone())?;
-                    token_stack.push(tag.clone());
+                    let start_loc = next_loc - tag_text_len as isize;
+                    let tag = Token::from(tag_text.clone()).map_err(|e| e.with_location(start_loc))?;
+                    token_stack.push((tag.clone(), start_loc));
                     // Handle special tags
                     if let Token::Start(tag_name, _) = tag {
                         let tag_name = tag_name.as_str();
@@ -119,17 +175,20 @@ fn html_to_stack(html: &str) -> Result<Vec<Token>, String> {
         }
     }
     if !chars_stack.is_empty() {
+        let text_len = chars_stack.len();
         let text = String::from_iter(chars_stack);
-        token_stack.push(Token::Text(text));
+        let text_start_loc = SourceLocation(html.chars().count() - text_len);
+        token_stack.push((Token::Text(text), text_start_loc));
     }
     Ok(token_stack)
 }
 
-fn stack_to_dom(token_stack: Vec<Token>) -> Result<Vec<Node>, String> {
+fn stack_to_dom(token_stack: Vec<(Token, SourceLocation)>) -> Result<Vec<Node>, HTMLParseError> {
     let mut nodes: Vec<Node> = Vec::new();
-    let mut start_tags_stack: Vec<Token> = Vec::new();
+    let mut start_tags_stack: Vec<(Token, SourceLocation)> = Vec::new();
     let mut start_tag_index = 0;
-    for (i, token) in token_stack.iter().enumerate() {
+    for (i, (token, location)) in token_stack.iter().enumerate() {
+        let location = *location;
         match token {
             Token::Start(tag, attrs) => {
                 let is_void_tag = VOID_TAGS.contains(&tag.as_str());
@@ -145,7 +204,7 @@ fn stack_to_dom(token_stack: Vec<Token>) -> Result<Vec<Node>, String> {
                         );
                     } else {
                         start_tag_index = i;
-                        start_tags_stack.push(Token::Start(tag.clone(), attrs.clone()));
+                        start_tags_stack.push((Token::Start(tag.clone(), attrs.clone()), location));
                     }
                 } else if is_void_tag {
                     // You do not need to push the void tag to the stack
@@ -153,19 +212,22 @@ fn stack_to_dom(token_stack: Vec<Token>) -> Result<Vec<Node>, String> {
                     // element of the first start tag, and this element
                     // will then be pushed to the stack recursively.
                 } else {
-                    start_tags_stack.push(Token::Start(tag.clone(), attrs.clone()));
+                    start_tags_stack.push((Token::Start(tag.clone(), attrs.clone()), location));
                 }
             }
             Token::End(tag) => {
-                let start_tag = match start_tags_stack.pop() {
-                    Some(token) => token.into_element(),
-                    None => return Err(format!("No start tag matches </{}>", tag)),
+                let (start_tag, start_location) = match start_tags_stack.pop() {
+                    Some((token, location)) => (token.into_element(), location),
+                    None => return Err(
+                        InnerHTMLParseError::UnopenedTag { tag: tag.to_string() }
+                            .with_location(location)
+                    ),
                 };
                 if tag != &start_tag.name {
-                    return Err(format!(
-                        "<{}> does not match the </{}>",
-                        start_tag.name, tag
-                    ));
+                    return Err(
+                        InnerHTMLParseError::MismatchedTags { start_tag: start_tag.name, start_location, end_tag: tag.to_string() }
+                            .with_location(location)
+                    );
                 }
                 if start_tags_stack.is_empty() {
                     nodes.push(
@@ -187,20 +249,24 @@ fn stack_to_dom(token_stack: Vec<Token>) -> Result<Vec<Node>, String> {
     }
 
     match start_tags_stack.pop() {
-        Some(token) => {
+        Some((token, location)) => {
             let start_tag_name = token.into_element().name;
-            Err(format!("<{}> is not closed", start_tag_name))
+            Err(
+                InnerHTMLParseError::UnclosedTag { tag: start_tag_name.to_string() }
+                    .with_location(location)
+            )
         }
         None => Ok(nodes),
     }
 }
 
-fn try_stack_to_dom(token_stack: Vec<Token>) -> Vec<Node> {
+fn try_stack_to_dom(token_stack: Vec<(Token, SourceLocation)>) -> Vec<Node> {
     let mut nodes: Vec<Node> = Vec::new();
     let mut start_tags_stack: Vec<Token> = Vec::new();
     let mut start_tag_index = 0;
 
-    for (i, token) in token_stack.iter().enumerate() {
+    for (i, (token, location)) in token_stack.iter().enumerate() {
+        let _location = *location;
         match token {
             Token::Start(tag, attrs) => {
                 let is_void_tag = VOID_TAGS.contains(&tag.as_str());
@@ -329,7 +395,7 @@ fn try_stack_to_dom(token_stack: Vec<Token>) -> Vec<Node> {
 ///     },
 /// ]
 /// ```
-pub fn parse(html: &str) -> Result<Vec<Node>, String> {
+pub fn parse(html: &str) -> Result<Vec<Node>, HTMLParseError> {
     let stack = html_to_stack(html)?;
 
     stack_to_dom(stack)
