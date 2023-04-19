@@ -29,11 +29,27 @@ pub trait Htmlifiable {
 
 impl Htmlifiable for Element {
     fn html(&self) -> String {
+        let children_html = match self.name.as_str() {
+            "style" | "script" => {
+                // <style> and <script> tags should not have their contents escaped
+                let mut html = String::new();
+                for node in &self.children {
+                    if let Node::Text(text) = node {
+                        html.push_str(text.as_str());
+                    } else {
+                        html.push_str(node.html().as_str());
+                    }
+                }
+                html
+            }
+            _ => self.children.html(),
+        };
+
         if self.attrs.is_empty() {
             return if VOID_TAGS.contains(&self.name.as_str()) {
                 format!("<{}>", self.name)
             } else {
-                format!("<{}>{}</{}>", self.name, self.children.html(), self.name)
+                format!("<{}>{}</{}>", self.name, children_html, self.name)
             };
         }
         let attrs = self
@@ -56,7 +72,7 @@ impl Htmlifiable for Element {
                 "<{} {}>{}</{}>",
                 self.name,
                 attrs,
-                self.children.html(),
+                children_html,
                 self.name
             )
         }
