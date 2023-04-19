@@ -75,7 +75,7 @@ fn html_to_stack(html: &str) -> Result<Vec<Token>, String> {
                         let txt_text = String::from_iter(chars_stack);
                         chars_stack = Vec::new();
                         // Push the text we just got to the token stack.
-                        token_stack.push(Token::Text(txt_text));
+                        token_stack.push(Token::from_text(txt_text));
                     }
                     chars_stack.push(ch);
                 }
@@ -120,7 +120,7 @@ fn html_to_stack(html: &str) -> Result<Vec<Token>, String> {
     }
     if !chars_stack.is_empty() {
         let text = String::from_iter(chars_stack);
-        token_stack.push(Token::Text(text));
+        token_stack.push(Token::from_text(text));
     }
     Ok(token_stack)
 }

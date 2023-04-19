@@ -83,6 +83,10 @@ impl Token {
         Self::Comment(comment[4..comment.len() - 3].to_string())
     }
 
+    pub fn from_text(text: String) -> Self {
+        Self::Text(html_escape::decode_html_entities(&text).into_owned())
+    }
+
     pub fn node(&self) -> Node {
         self.clone().into_node()
     }
