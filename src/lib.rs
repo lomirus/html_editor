@@ -52,6 +52,12 @@ pub enum Doctype {
 #[derive(Debug, Clone)]
 pub enum Node {
     Element(Element),
+    /// A text node in the DOM. The contents of the Text has all entities expanded,
+    /// for example parsing `I &lt;3 HTML` would result in a `Text("I <3 HTML")`
+    ///
+    /// Note that `<script>` and `<style>` are considered special, and entities inside
+    /// are not expanded. This is also respected when serializing a `<script>` or
+    /// `<style>` element using [Htmlifiable::html](operation::Htmlifiable::html)
     Text(String),
     Comment(String),
     Doctype(Doctype),
