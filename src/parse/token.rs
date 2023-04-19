@@ -20,7 +20,7 @@ pub enum Token {
 impl Token {
     pub fn from(tag: String) -> Result<Self, InnerHTMLParseError> {
         if tag.ends_with("/>") {
-            let tag_name_start = tag[1..tag.len()]
+            let tag_name_start = tag[1..tag.len()-2]
                 .chars()
                 .position(|x| x != ' ')
                 .map(|x| x + 1)
@@ -58,7 +58,7 @@ impl Token {
 
             Ok(Self::Doctype(Doctype::Xml { version, encoding }))
         } else if tag.starts_with('<') {
-            let tag_name_start = tag[1..tag.len()]
+            let tag_name_start = tag[1..tag.len()-1]
                 .chars()
                 .position(|x| !x.is_ascii_whitespace())
                 .map(|x| x + 1)
