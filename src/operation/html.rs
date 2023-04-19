@@ -43,7 +43,7 @@ impl Htmlifiable for Element {
                 if v.is_empty() {
                     k.to_string()
                 } else {
-                    format!(r#"{}="{}""#, k, v)
+                    format!(r#"{}="{}""#, k, html_escape::encode_double_quoted_attribute(&v).into_owned())
                 }
             })
             .collect::<Vec<_>>()
@@ -67,7 +67,7 @@ impl Htmlifiable for Node {
     fn html(&self) -> String {
         match self {
             Node::Element(element) => element.html(),
-            Node::Text(text) => text.to_string(),
+            Node::Text(text) => html_escape::encode_text(text).into_owned(),
             Node::Comment(comment) => format!("<!--{}-->", comment),
             Node::Doctype(doctype) => match &doctype {
                 Doctype::Html => "<!DOCTYPE html>".to_string(),
