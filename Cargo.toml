@@ -1,6 +1,6 @@
 [package]
 name = "html_editor"
-version = "0.5.2"
+version = "0.6.0"
 edition = "2021"
 authors = ["Lomirus"]
 description = "Pure and simple HTML parser and editor."
