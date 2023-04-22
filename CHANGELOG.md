@@ -1,3 +1,7 @@
+## v0.6.1 (2023-04-22)
+
+Same as v0.6.0 as the v0.6.0 was yanked for mis-publishing of the wrong commit.
+
 ## v0.6.0 (2023-04-22)
 
 ### New Features
