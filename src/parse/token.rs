@@ -83,7 +83,7 @@ impl Token {
         Self::Comment(comment[4..comment.len() - 3].to_string())
     }
 
-    /// Takes a raw (escaped) text string, giving a Text token with the entities decoded
+    /// Takes a raw (escaped) text string, giving a Text token with the entities decoded.
     /// ```ignore
     /// assert_eq!(Token::from_raw_text("hello &amp; goodbye"), Token::Text("hello & goodbye"));
     /// ```
