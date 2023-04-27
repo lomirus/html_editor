@@ -1,3 +1,30 @@
+## v0.6.1 (2023-04-22)
+
+Same as v0.6.0 as the v0.6.0 was yanked for mis-publishing of the wrong commit.
+
+## v0.6.0 (2023-04-22)
+
+### New Features
+
+- Add `Node::as_element()` in #8 by @arduano.
+- Add `Node::as_element_mut()` in #8 by @arduano.
+- Add `Element::into_node()` in #8 by @arduano.
+- Add `Queryable::query_mut()` in #8 by @arduano.
+- Add `Queryable::execute_for()` in #8 by @arduano.
+- Implement `From<Element>` for `Node` in #8 by @arduano.
+- Derive `Clone` trait for `Element` in #8 by @arduano.
+- Support grouping selectors (e.g. `h1, h2`)in #7 by @lomirus.
+
+### Refactor
+
+- Refactor `Node::Element { name, attr, children }` into `Node::Element(Element)` in #8 by @arduano.
+- Remove `Node::into_element(self)` in #8 by @arduano.
+- Implement `From<&str>` instead of ordinary trait method for `Selector` @lomirus. 
+
+### Performance
+
+- Improve the performance (3~10 times faster) when parsing large html file by @lomirus. 
+
 ## v0.5.2 (2022-08-21)
 
 ### Fix
