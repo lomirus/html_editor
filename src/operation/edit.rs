@@ -38,6 +38,7 @@ pub trait Editable {
     ///         vec![Node::Text("Cancel".to_string())]
     ///     ))
     ///     .html();
+    ///
     /// assert_eq!(html, r#"<div><span>Ok</span><span>Cancel</span></div>"#)
     /// ```
     fn insert_to(&mut self, selector: &Selector, target: Node) -> &mut Self;
@@ -57,6 +58,7 @@ pub trait Editable {
     ///
     /// let selector = Selector::from(".ad");
     /// let html = parse(html).unwrap().remove_by(&selector).html();
+    ///
     /// assert_eq!(html, r#"
     /// <div>
     ///     <div class="recommend"></div>
@@ -65,6 +67,32 @@ pub trait Editable {
     /// </div>"#)
     /// ```
     fn remove_by(&mut self, selector: &Selector) -> &mut Self;
+
+    /// Replace all elements that matches the `selector` with new nodes.
+    ///
+    /// ```
+    /// use html_editor::{parse, Node, operation::*};
+    ///
+    /// let html = r#"
+    /// <div>
+    ///     <p>Hello</p>
+    /// </div>"#;
+    ///
+    /// let selector = Selector::from("p");
+    /// let html = parse(html)
+    ///     .unwrap()
+    ///     .replace_with(&selector, |p| {
+    ///         let new_text = format!("{} World!", p.children[0].html());
+    ///         Node::Comment(new_text)
+    ///     })
+    ///     .html();
+    ///
+    /// assert_eq!(html, r#"
+    /// <div>
+    ///     <!--Hello World!-->
+    /// </div>"#)
+    /// ```
+    fn replace_with(&mut self, selector: &Selector, f: fn(el: &Element) -> Node) -> &mut Self;
 }
 
 impl Editable for Vec<Node> {
@@ -118,6 +146,19 @@ impl Editable for Vec<Node> {
         }
         self
     }
+
+    fn replace_with(&mut self, selector: &Selector, f: fn(el: &Element) -> Node) -> &mut Self {
+        for node in self.iter_mut() {
+            if let Node::Element(ref mut el) = node {
+                if selector.matches(el) {
+                    *node = f(el);
+                } else {
+                    el.replace_with(selector, f);
+                }
+            }
+        }
+        self
+    }
 }
 
 impl Editable for Element {
@@ -136,6 +177,11 @@ impl Editable for Element {
 
     fn remove_by(&mut self, selector: &Selector) -> &mut Self {
         self.children.remove_by(selector);
+        self
+    }
+
+    fn replace_with(&mut self, selector: &Selector, f: fn(el: &Element) -> Node) -> &mut Self {
+        self.children.replace_with(selector, f);
         self
     }
 }
