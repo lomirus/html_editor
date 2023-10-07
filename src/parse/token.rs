@@ -83,6 +83,14 @@ impl Token {
         Self::Comment(comment[4..comment.len() - 3].to_string())
     }
 
+    /// Takes a raw (escaped) text string, giving a Text token with the entities decoded.
+    /// ```ignore
+    /// assert_eq!(Token::from_raw_text("hello &amp; goodbye"), Token::Text("hello & goodbye"));
+    /// ```
+    pub fn from_raw_text(text: String) -> Self {
+        Self::Text(html_escape::decode_html_entities(&text).into_owned())
+    }
+
     pub fn node(&self) -> Node {
         self.clone().into_node()
     }

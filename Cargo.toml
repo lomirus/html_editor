@@ -10,3 +10,4 @@ license = "MIT"
 keywords = ["html", "parser", "editor", "dom"]
 
 [dependencies]
+html-escape = "0.2.13"

@@ -70,7 +70,7 @@ pub fn parse(attr_str: String) -> Vec<(String, String)> {
                             attr_pos = AttrPos::Space;
                             let value = String::from_iter(chars_stack);
                             chars_stack = Vec::new();
-                            value_stack.push(value)
+                            value_stack.push(html_escape::decode_html_entities(&value).into_owned())
                         }
                     } else {
                         chars_stack.push(ch)
