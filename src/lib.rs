@@ -38,7 +38,7 @@ mod parse;
 
 pub mod operation;
 
-pub use parse::parse;
+pub use parse::{parse, SourceLocation, HTMLParseError, InnerHTMLParseError};
 pub use parse::try_parse;
 
 /// Doctype of Html or Xml

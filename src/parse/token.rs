@@ -1,4 +1,4 @@
-use crate::parse::attrs;
+use crate::parse::{attrs, InnerHTMLParseError};
 use crate::{Doctype, Element, Node};
 
 #[derive(Debug, Clone)]
@@ -18,13 +18,13 @@ pub enum Token {
 }
 
 impl Token {
-    pub fn from(tag: String) -> Result<Self, String> {
+    pub fn from(tag: String) -> Result<Self, InnerHTMLParseError> {
         if tag.ends_with("/>") {
-            let tag_name_start = tag[1..tag.len()]
+            let tag_name_start = tag[1..tag.len()-2]
                 .chars()
                 .position(|x| x != ' ')
-                .expect("tag name cannot be all spaces after \"<\"")
-                + 1;
+                .map(|x| x + 1)
+                .ok_or_else(|| InnerHTMLParseError::InvalidTag { tag: tag.clone(), reason: "Tag name cannot be all spaces after \"<\"" })?;
             let tag_name_end_option = tag[tag_name_start..tag.len()]
                 .chars()
                 .position(|x| x == ' ');
@@ -47,25 +47,27 @@ impl Token {
             let version = attr
                 .iter()
                 .find(|(name, _)| name == "version")
-                .expect("cannot find version attribute in xml declaration")
-                .1
-                .to_string();
+                .map(|x| x.1.to_string())
+                .ok_or_else(|| InnerHTMLParseError::InvalidTag { tag: tag.clone(), reason: "Cannot find version attribute in xml declaration" })?;
+
             let encoding = attr
                 .iter()
                 .find(|(name, _)| name == "encoding")
-                .expect("cannot find encoding attribute in xml declaration")
-                .1
-                .to_string();
+                .map(|x| x.1.to_string())
+                .ok_or_else(|| InnerHTMLParseError::InvalidTag { tag: tag.clone(), reason: "Cannot find encoding attribute in xml declaration" })?;
+
             Ok(Self::Doctype(Doctype::Xml { version, encoding }))
         } else if tag.starts_with('<') {
-            let tag_name_start = tag[1..tag.len()]
+            let tag_name_start = tag[1..tag.len()-1]
                 .chars()
                 .position(|x| !x.is_ascii_whitespace())
-                .expect("tag name cannot be all spaces after \"<\"")
-                + 1;
+                .map(|x| x + 1)
+                .ok_or_else(|| InnerHTMLParseError::InvalidTag { tag: tag.clone(), reason: "Tag name cannot be all spaces after \"<\"" })?;
+
             let tag_name_end_option = tag[tag_name_start..tag.len()]
                 .chars()
                 .position(|x| x.is_ascii_whitespace());
+
             let tag_name_end = match tag_name_end_option {
                 Some(end) => end + tag_name_start,
                 None => tag.len() - 1,
@@ -74,7 +76,7 @@ impl Token {
             let attr_str = tag[tag_name_end..tag.len() - 1].trim().to_string();
             Ok(Self::Start(tag_name, attrs::parse(attr_str)))
         } else {
-            Err(format!("Invalid tag: {}", tag))
+            Err(InnerHTMLParseError::InvalidTag { tag, reason: "Invalid tag" })
         }
     }
 
