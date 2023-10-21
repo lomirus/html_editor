@@ -133,8 +133,8 @@ fn stack_to_dom(token_stack: Vec<Token>) -> Result<Vec<Node>, String> {
         match token {
             Token::Start(tag, attrs) => {
                 let is_void_tag = VOID_TAGS.contains(&tag.as_str());
-                if start_tags_stack.is_empty() {
-                    if is_void_tag {
+                if is_void_tag {
+                    if start_tags_stack.is_empty() {
                         nodes.push(
                             Element {
                                 name: tag.clone(),
@@ -144,15 +144,15 @@ fn stack_to_dom(token_stack: Vec<Token>) -> Result<Vec<Node>, String> {
                             .into_node(),
                         );
                     } else {
-                        start_tag_index = i;
-                        start_tags_stack.push(Token::Start(tag.clone(), attrs.clone()));
+                        // You do not need to push the void tag to the stack
+                        // like above, because it must be inside the the
+                        // element of the first start tag, and this element
+                        // will then be pushed to the stack recursively.
                     }
-                } else if is_void_tag {
-                    // You do not need to push the void tag to the stack
-                    // like above, because it must be inside the the
-                    // element of the first start tag, and this element
-                    // will then be pushed to the stack recursively.
                 } else {
+                    if start_tags_stack.is_empty() {
+                        start_tag_index = i;
+                    }
                     start_tags_stack.push(Token::Start(tag.clone(), attrs.clone()));
                 }
             }
@@ -161,13 +161,13 @@ fn stack_to_dom(token_stack: Vec<Token>) -> Result<Vec<Node>, String> {
                     Some(token) => token.into_element(),
                     None => return Err(format!("No start tag matches </{}>", tag)),
                 };
-                if tag != &start_tag.name {
-                    return Err(format!(
-                        "<{}> does not match the </{}>",
-                        start_tag.name, tag
-                    ));
-                }
                 if start_tags_stack.is_empty() {
+                    if tag != &start_tag.name {
+                        return Err(format!(
+                            "<{}> does not match the </{}>",
+                            start_tag.name, tag
+                        ));
+                    }
                     nodes.push(
                         Element {
                             name: start_tag.name,
