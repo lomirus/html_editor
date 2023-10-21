@@ -72,6 +72,7 @@ let elements: Vec<Element> = nodes.query_all(&selector);
 let a: String = parse(html)?.trim().html();
 let b: String = parse(html)?.insert_to(&selector, node).html();
 let c: String = parse(html)?.remove_by(&selector).html();
+let d: String = parse(html)?.replace_with(&selector, |el| Node::Comment(el.html())).html();
 ```
 
 You can find more examples in the [documentation](https://docs.rs/html_editor/latest/html_editor/).
