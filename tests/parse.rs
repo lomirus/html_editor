@@ -104,7 +104,6 @@ fn fault_tolerance() {
     );
 }
 
-
 #[test]
 fn autocomplete_multiple_unclosed_tags() {
     assert_eq!(
