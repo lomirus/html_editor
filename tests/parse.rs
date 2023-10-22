@@ -105,6 +105,14 @@ fn fault_tolerance() {
 }
 
 #[test]
+fn autocomplete_multiple_unclosed_tags() {
+    assert_eq!(
+        try_parse(r#"<img><h1><h2><h3><img><h4><h5><h6><h7><h8><h9><img>"#).html(),
+        "<img><h1><h2><h3><img><h4><h5><h6><h7><h8><h9><img></h9></h8></h7></h6></h5></h4></h3></h2></h1>"
+    );
+}
+
+#[test]
 fn xml() {
     let mut html = parse(
         r#"

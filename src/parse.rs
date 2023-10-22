@@ -264,17 +264,16 @@ fn try_stack_to_dom(token_stack: Vec<Token>) -> Vec<Node> {
         }
     }
 
-    while let Some(token) = start_tags_stack.pop() {
-        let node = match token {
-            Token::Start(name, attrs) => Element {
+    if !start_tags_stack.is_empty() {
+        if let Token::Start(name, attrs) = start_tags_stack[0].clone() {
+            nodes.push(Node::Element(Element {
                 name,
                 attrs,
                 children: try_stack_to_dom(token_stack[start_tag_index + 1..].to_vec()),
-            }
-            .into_node(),
-            _ => unreachable!(),
-        };
-        nodes = vec![node];
+            }));
+        } else {
+            unreachable!()
+        }
     }
     nodes
 }
