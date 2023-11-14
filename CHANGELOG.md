@@ -1,6 +1,13 @@
+# CHANGELOG
+
+## v0.7.0 (2023-11-14)
+
+- Add `replace_with()` method in `Editable` trait in #14 by @lomirus.
+- Improve autocomplete performance in `try_parse` from O(n!) to O(n^2) in #16 by @lomirus.
+
 ## v0.6.1 (2023-04-22)
 
-Same as v0.6.0 as the v0.6.0 was yanked for mis-publishing of the wrong commit.
+Same as v0.6.0, as the v0.6.0 was yanked for mis-publishing of the wrong commit.
 
 ## v0.6.0 (2023-04-22)
 
@@ -19,11 +26,11 @@ Same as v0.6.0 as the v0.6.0 was yanked for mis-publishing of the wrong commit.
 
 - Refactor `Node::Element { name, attr, children }` into `Node::Element(Element)` in #8 by @arduano.
 - Remove `Node::into_element(self)` in #8 by @arduano.
-- Implement `From<&str>` instead of ordinary trait method for `Selector` @lomirus. 
+- Implement `From<&str>` instead of ordinary trait method for `Selector` @lomirus.
 
 ### Performance
 
-- Improve the performance (3~10 times faster) when parsing large html file by @lomirus. 
+- Improve the performance (3~10 times faster) when parsing large html file by @lomirus.
 
 ## v0.5.2 (2022-08-21)
 
