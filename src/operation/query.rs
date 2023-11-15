@@ -73,61 +73,6 @@ pub trait Queryable {
     /// let app: &mut Element = parse(html).unwrap().query_mut(&selector).unwrap();
     /// ```
     fn query_mut(&mut self, selector: &Selector) -> Option<&mut Element>;
-
-    /// Executes a given function for the node in `self` for the given selector.
-    ///
-    /// ```
-    /// use html_editor::{parse, Element, Node};
-    /// use html_editor::operation::*;
-    ///
-    /// let html = r#"
-    ///    <!DOCTYPE html>
-    ///    <html lang="en">
-    ///        <head>
-    ///           <meta charset="UTF-8">
-    ///           <title>App</title>
-    ///        </head>
-    ///        <body>
-    ///           <input type="text" />
-    ///           <input type="text" />
-    ///           <input type="text" />
-    ///        </body>
-    ///    </html>"#;
-    ///
-    /// // Add a class to all the input elements
-    /// let selector: Selector = Selector::from("input");
-    /// let mut doc: Vec<Node> = parse(html).unwrap();
-    /// doc.execute_for(&selector, |elem| {
-    ///    elem.attrs.push(("class".to_string(), "input".to_string()));
-    /// });
-    /// ```
-    fn execute_for(&mut self, selector: &Selector, f: impl FnMut(&mut Element));
-}
-
-// We meed this function to allow the trait interface to use `impl FnMut(&mut Element)` instead of `&mut impl FnMut(&mut Element)`
-fn nodes_execute_for_internal(
-    nodes: &mut Vec<Node>,
-    selector: &Selector,
-    f: &mut impl FnMut(&mut Element),
-) {
-    for node in nodes {
-        if let Some(element) = node.as_element_mut() {
-            // Recursively traverse the descendants nodes
-            element_execute_for_internal(element, selector, f);
-        }
-    }
-}
-
-// We meed this function to allow the trait interface to use `impl FnMut(&mut Element)` instead of `&mut impl FnMut(&mut Element)`
-fn element_execute_for_internal(
-    element: &mut Element,
-    selector: &Selector,
-    f: &mut impl FnMut(&mut Element),
-) {
-    if selector.matches(element) {
-        f(element);
-    }
-    nodes_execute_for_internal(&mut element.children, selector, f);
 }
 
 impl Queryable for Vec<Node> {
@@ -164,10 +109,6 @@ impl Queryable for Vec<Node> {
         }
         None
     }
-
-    fn execute_for(&mut self, selector: &Selector, mut f: impl FnMut(&mut Element)) {
-        nodes_execute_for_internal(self, selector, &mut f);
-    }
 }
 
 impl Queryable for Element {
@@ -194,10 +135,6 @@ impl Queryable for Element {
             self.children.query_mut(selector)
         }
     }
-
-    fn execute_for(&mut self, selector: &Selector, mut f: impl FnMut(&mut Element)) {
-        element_execute_for_internal(self, selector, &mut f);
-    }
 }
 
 impl Queryable for Node {
@@ -222,12 +159,6 @@ impl Queryable for Node {
             element.query_mut(selector)
         } else {
             None
-        }
-    }
-
-    fn execute_for(&mut self, selector: &Selector, f: impl FnMut(&mut Element)) {
-        if let Some(element) = self.as_element_mut() {
-            element.execute_for(selector, f);
         }
     }
 }
